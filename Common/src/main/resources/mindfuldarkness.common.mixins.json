@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "package": "fuzs.mindfuldarkness.mixin",
+  "refmap": "mindfuldarkness.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "client.ReloadableResourceManagerMixin",
+    "client.accessor.AbstractContainerMenuAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
