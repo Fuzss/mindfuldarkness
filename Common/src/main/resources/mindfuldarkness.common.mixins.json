@@ -7,8 +7,10 @@
   "mixins": [
   ],
   "client": [
+    "client.FontMixin",
     "client.ReloadableResourceManagerMixin",
-    "client.accessor.AbstractContainerMenuAccessor"
+    "client.accessor.AbstractContainerMenuAccessor",
+    "client.accessor.TextureManagerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

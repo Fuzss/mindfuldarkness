@@ -1,6 +1,6 @@
 package fuzs.mindfuldarkness.mixin.client;
 
-import fuzs.mindfuldarkness.server.packs.resources.ColorChangingResourceManager;
+import fuzs.mindfuldarkness.client.packs.resources.ColorChangingResourceManager;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.ReloadInstance;

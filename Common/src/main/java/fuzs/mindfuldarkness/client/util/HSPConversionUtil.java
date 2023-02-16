@@ -1,4 +1,4 @@
-package fuzs.mindfuldarkness.util;
+package fuzs.mindfuldarkness.client.util;
 
 /**
  * Adapted from <a href="http://alienryderflex.com/hsp.html">HSP Color Model — Alternative to HSV (HSB) and HSL</a>.

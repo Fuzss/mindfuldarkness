@@ -3,6 +3,7 @@ package fuzs.mindfuldarkness.client.handler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.mindfuldarkness.MindfulDarkness;
+import fuzs.mindfuldarkness.client.gui.screens.PixelConfigScreen;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import fuzs.mindfuldarkness.mixin.client.accessor.AbstractContainerMenuAccessor;
 import fuzs.puzzleslib.client.gui.screens.CommonScreens;
@@ -26,7 +27,7 @@ import java.util.Optional;
 import java.util.function.UnaryOperator;
 
 public class DaytimeSwitchHandler {
-    private static final ResourceLocation TEXTURE_LOCATION = MindfulDarkness.id("textures/gui/daytime_switch.png");
+    public static final ResourceLocation TEXTURE_LOCATION = MindfulDarkness.id("textures/gui/daytime_switcher.png");
 
     public static Optional<Screen> onScreenOpen(@Nullable Screen oldScreen, @Nullable Screen newScreen) {
         if (newScreen instanceof AbstractContainerScreen<?> containerScreen && MindfulDarkness.CONFIG.get(ClientConfig.class).debugContainerTypes) {
@@ -55,14 +56,15 @@ public class DaytimeSwitchHandler {
         }
     }
 
-    private static void drawThemeBg(PoseStack poseStack, int leftPos, int topPos, int imageWidth) {
+    public static void drawThemeBg(PoseStack poseStack, int leftPos, int topPos, int imageWidth) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, TEXTURE_LOCATION);
-        GuiComponent.blit(poseStack, leftPos + imageWidth - 3 - 84, topPos - 24, 63, 0, 84, 24, 256, 256);
+        GuiComponent.blit(poseStack, leftPos + imageWidth - 3 - 101, topPos - 24, 0, 226, 101, 24, 256, 256);
     }
 
     private static boolean supportsDaytimeSwitcher(AbstractContainerScreen<?> containerScreen) {
+        if (MindfulDarkness.CONFIG.get(ClientConfig.class).hideIngameSwitcher) return false;
         if (containerScreen.height >= CommonScreens.INSTANCE.getImageHeight(containerScreen) + 2 * 24) {
             if (containerScreen instanceof CreativeModeInventoryScreen) return false;
             MenuType<?> type = ((AbstractContainerMenuAccessor) containerScreen.getMenu()).mindfuldarkness$getMenuType();
@@ -73,20 +75,27 @@ public class DaytimeSwitchHandler {
 
     public static void onScreenInit$Post(Screen screen, Minecraft minecraft, int width, int height, UnaryOperator<AbstractWidget> addWidget) {
         if (screen instanceof AbstractContainerScreen<?> containerScreen && supportsDaytimeSwitcher(containerScreen)) {
-            makeButtons(screen, CommonScreens.INSTANCE.getLeftPos(containerScreen), CommonScreens.INSTANCE.getTopPos(containerScreen), CommonScreens.INSTANCE.getImageWidth(containerScreen), addWidget);
+            makeButtons(minecraft, screen, CommonScreens.INSTANCE.getLeftPos(containerScreen), CommonScreens.INSTANCE.getTopPos(containerScreen), CommonScreens.INSTANCE.getImageWidth(containerScreen), addWidget);
         }
     }
 
-    private static AbstractWidget[] makeButtons(Screen screen, int leftPos, int topPos, int imageWidth, UnaryOperator<AbstractWidget> addWidget) {
-        AbstractWidget[] abstractWidgets = new AbstractWidget[3];
-        abstractWidgets[0] = addWidget.apply(new ImageButton(leftPos + imageWidth - 3 - 21, topPos - 18, 15, 15, 48, 0, TEXTURE_LOCATION, button -> {
+    public static AbstractWidget[] makeButtons(Minecraft minecraft, Screen screen, int leftPos, int topPos, int imageWidth, UnaryOperator<AbstractWidget> addWidget) {
+        AbstractWidget[] abstractWidgets = new AbstractWidget[4];
+        abstractWidgets[0] = addWidget.apply(new ImageButton(leftPos + imageWidth - 3 - 21, topPos - 18, 15, 15, 224, 0, TEXTURE_LOCATION, button -> {
             screen.onClose();
         }));
-        abstractWidgets[1] = addWidget.apply(new ImageButton(leftPos + imageWidth - 3 - 76, topPos - 20, 24, 19, 0, 0, TEXTURE_LOCATION, button -> {
+        abstractWidgets[1] = addWidget.apply(new ImageButton(leftPos + imageWidth - 3 - 95, topPos - 20, 24, 19, 176, 0, TEXTURE_LOCATION, button -> {
             toggleThemeButtons(abstractWidgets[1], abstractWidgets[2], true);
         }));
-        abstractWidgets[2] = addWidget.apply(new ImageButton(leftPos + imageWidth - 3 - 49, topPos - 20, 24, 19, 24, 0, TEXTURE_LOCATION, button -> {
+        abstractWidgets[2] = addWidget.apply(new ImageButton(leftPos + imageWidth - 3 - 68, topPos - 20, 24, 19, 200, 0, TEXTURE_LOCATION, button -> {
             toggleThemeButtons(abstractWidgets[1], abstractWidgets[2], true);
+        }));
+        abstractWidgets[3] = addWidget.apply(new ImageButton(leftPos + imageWidth - 3 - 40, topPos - 18, 15, 15, 239, 0, TEXTURE_LOCATION, button -> {
+            if (screen instanceof PixelConfigScreen pixelConfigScreen) {
+                pixelConfigScreen.closeToLastScreen();
+            } else {
+                minecraft.setScreen(new PixelConfigScreen(screen));
+            }
         }));
         toggleThemeButtons(abstractWidgets[1], abstractWidgets[2], false);
         return abstractWidgets;
@@ -97,6 +106,7 @@ public class DaytimeSwitchHandler {
         if (toggleSetting) {
             darkTheme = !darkTheme;
             MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.set(darkTheme);
+            ColorChangedResourcesHandler.INSTANCE.recordedReset();
         }
         lightThemeWidget.active = darkTheme;
         darkThemeWidget.active = !darkTheme;

@@ -1,4 +1,4 @@
-package fuzs.mindfuldarkness.server.packs.resources;
+package fuzs.mindfuldarkness.client.packs.resources;
 
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceMetadata;

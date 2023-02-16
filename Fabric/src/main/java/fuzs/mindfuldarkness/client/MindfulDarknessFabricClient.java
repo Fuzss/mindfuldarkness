@@ -11,6 +11,12 @@ import net.fabricmc.fabric.api.client.screen.v1.Screens;
 
 public class MindfulDarknessFabricClient implements ClientModInitializer {
 
+    @Override
+    public void onInitializeClient() {
+        ClientFactories.INSTANCE.clientModConstructor(MindfulDarkness.MOD_ID).accept(new MindfulDarknessClient());
+        registerHandlers();
+    }
+
     private static void registerHandlers() {
         ContainerScreenEvents.BACKGROUND.register(DaytimeSwitchHandler::onContainerScreen$Render$Background);
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
@@ -20,11 +26,5 @@ public class MindfulDarknessFabricClient implements ClientModInitializer {
             });
         });
         ExtraScreenEvents.OPENING.register(DaytimeSwitchHandler::onScreenOpen);
-    }
-
-    @Override
-    public void onInitializeClient() {
-        ClientFactories.INSTANCE.clientModConstructor(MindfulDarkness.MOD_ID).accept(new MindfulDarknessClient());
-        registerHandlers();
     }
 }

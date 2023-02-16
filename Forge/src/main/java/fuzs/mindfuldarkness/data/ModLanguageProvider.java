@@ -1,7 +1,5 @@
 package fuzs.mindfuldarkness.data;
 
-import fuzs.essentialpotions.EssentialPotions;
-import fuzs.essentialpotions.init.ModRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.sounds.SoundEvent;
@@ -18,6 +16,17 @@ public class ModLanguageProvider extends LanguageProvider {
     @Override
     protected void addTranslations() {
         this.add("debug.menu.opening", "Menu Type: %s");
+        this.add("screen.daytime_switcher.algorithm.linear", "Linear");
+        this.add("screen.daytime_switcher.algorithm.grayscale_and_linear", "Grayscale And Linear");
+        this.add("screen.daytime_switcher.algorithm.hsp", "HSP");
+        this.add("screen.daytime_switcher.algorithm.grayscale_and_hsp", "Grayscale And HSP");
+        this.add("screen.daytime_switcher.algorithm.hsl", "HSL");
+        this.add("screen.daytime_switcher.algorithm.grayscale_and_hsl", "Grayscale And HSL");
+        this.add("screen.daytime_switcher.algorithm.hsv", "HSV");
+        this.add("screen.daytime_switcher.algorithm.grayscale_and_hsv", "Grayscale And HSV");
+        this.add("screen.daytime_switcher.algorithm", "Algorithm");
+        this.add("screen.daytime_switcher.interface_darkness", "Interface Darkness");
+        this.add("screen.daytime_switcher.front_brightness", "Font Brightness");
     }
 
     public void add(CreativeModeTab tab, String name) {
