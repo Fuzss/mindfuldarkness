@@ -3,13 +3,9 @@ package fuzs.mindfuldarkness.client.util;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.util.Mth;
 
-import java.awt.*;
-
-import static fuzs.mindfuldarkness.client.util.HSLConversionUtil.HSLtoRGB;
-import static fuzs.mindfuldarkness.client.util.HSLConversionUtil.RGBtoHSL;
 import static fuzs.mindfuldarkness.client.util.HSPConversionUtil.HSPtoRGB;
 import static fuzs.mindfuldarkness.client.util.HSPConversionUtil.RGBtoHSP;
-import static fuzs.mindfuldarkness.client.util.HSVConversionUtil.RGBtoHSV;
+import static fuzs.mindfuldarkness.client.util.CompactConversionsUtil.*;
 
 /**
  * Adapted from <a href="https://stackoverflow.com/questions/141855/programmatically-lighten-a-color">Programmatically Lighten a Color</a>.
@@ -31,20 +27,21 @@ public class RGBBrightnessUtil {
     }
 
     public static int darkenColorHSV(int packedColor, double brightness) {
-        float[] hsvColorArray = unpackRGBToHSV(packedColor);
-        return Color.HSBtoRGB((float) hsvColorArray[0], (float) hsvColorArray[1], (float) (hsvColorArray[2] * brightness));
+        double[] hsvColorArray = unpackRGBToHSV(packedColor);
+        double[] rgbColorArray = hsv2rgb((float) hsvColorArray[0], (float) hsvColorArray[1], (float) (hsvColorArray[2] * brightness));
+        return packRGBColor(rgbColorArray);
     }
 
-    public static float[] unpackRGBToHSV(int packedColor) {
+    public static double[] unpackRGBToHSV(int packedColor) {
         int red = packedColor >> 16 & 255;
         int green = packedColor >> 8 & 255;
         int blue = packedColor & 255;
-        return Color.RGBtoHSB(red, green, blue, null);
+        return rgb2hsv(red, green, blue);
     }
 
     public static int darkenColorHSL(int packedColor, double brightness) {
         double[] hslColorArray = unpackRGBToHSL(packedColor);
-        double[] rgbColorArray = HSLtoRGB((float) hslColorArray[0], (float) hslColorArray[1], (float) (hslColorArray[2] * brightness));
+        double[] rgbColorArray = hsl2rgb((float) hslColorArray[0], (float) hslColorArray[1], (float) (hslColorArray[2] * brightness));
         return packRGBColor(rgbColorArray);
     }
 
@@ -52,7 +49,7 @@ public class RGBBrightnessUtil {
         int red = packedColor >> 16 & 255;
         int green = packedColor >> 8 & 255;
         int blue = packedColor & 255;
-        return RGBtoHSL(red / 255.0, green / 255.0, blue / 255.0);
+        return rgb2hsl(red / 255.0, green / 255.0, blue / 255.0);
     }
 
     public static int packRGBColor(double[] rgbColorArray) {

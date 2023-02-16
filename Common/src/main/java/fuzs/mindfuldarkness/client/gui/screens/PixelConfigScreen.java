@@ -39,10 +39,13 @@ public class PixelConfigScreen extends Screen {
         ClientConfig clientConfig = MindfulDarkness.CONFIG.get(ClientConfig.class);
         this.addRenderableWidget(new NewTextureButton(this.leftPos + 13, this.topPos + 32, 150, 20, clientConfig.darkeningAlgorithm.get().getComponent(), button -> {
             AbstractConfigValue<PixelDarkener> configValue = clientConfig.darkeningAlgorithm;
-            PixelDarkener pixelDarkener = PixelDarkener.values()[(configValue.get().ordinal() + 1) % PixelDarkener.values().length];
+            int length = PixelDarkener.values().length;
+            PixelDarkener pixelDarkener = PixelDarkener.values()[((configValue.get().ordinal() + (hasShiftDown() ? -1 : 1)) + length) % length + length];
             configValue.set(pixelDarkener);
             button.setMessage(pixelDarkener.getComponent());
-            ColorChangedResourcesHandler.INSTANCE.recordedReset();
+            if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
+                ColorChangedResourcesHandler.INSTANCE.recordedReset();
+            }
         }));
         this.addRenderableWidget(new NewTextureSliderButton(this.leftPos + 13, this.topPos + 81, 150, 18, Component.empty(), clientConfig.textureDarkness.get()) {
 
@@ -54,7 +57,9 @@ public class PixelConfigScreen extends Screen {
             @Override
             protected void applyValue() {
                 clientConfig.textureDarkness.set(this.value);
-                ColorChangedResourcesHandler.INSTANCE.recordedReset();
+                if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
+                    ColorChangedResourcesHandler.INSTANCE.recordedReset();
+                }
             }
         });
         this.addRenderableWidget(new NewTextureSliderButton(this.leftPos + 13, this.topPos + 129, 150, 18, Component.empty(), clientConfig.fontBrightness.get()) {

@@ -101,6 +101,9 @@ public class ColorChangingResourceManager implements CloseableResourceManager {
     }
 
     private static List<String> compileNormalizedDomains(List<String> paths) {
+        // Compiles a list of directories with resources we want to modify, child directories are replaced if the parent is included, too.
+        // This is supposed to provide a relatively cheap check for a location if it's even interesting to us,
+        // so usually just something starting with 'textures/gui'.
         List<String> normalized = Lists.newArrayList();
         paths: for (String path : paths) {
             if (path.startsWith("!")) continue;
@@ -127,6 +130,7 @@ public class ColorChangingResourceManager implements CloseableResourceManager {
     }
 
     private static List<Function<String, Boolean>> compileValidPaths(List<String> paths) {
+        // This compiles the filter paths into proper regex and then into predicates which can return true, false (if inverse) or null (if not applicable).
         List<Function<String, Boolean>> pathFilters = Lists.newArrayList();
         for (String path : paths) {
             boolean inverse = path.startsWith("!");

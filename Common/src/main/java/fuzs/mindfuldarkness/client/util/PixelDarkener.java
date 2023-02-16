@@ -19,22 +19,6 @@ public enum PixelDarkener {
         public int processPixel(int pixel, double multiplier) {
             return RGBBrightnessUtil.darkenColorHSP(pixel, multiplier);
         }
-    }, GRAYSCALE_AND_HSV("screen.daytime_switcher.algorithm.grayscale_and_hsv") {
-
-        @Override
-        public int processPixel(int pixel, double multiplier) {
-            int newPixel = RGBBrightnessUtil.multiplyColorComponentsBy(pixel, multiplier * multiplier, true);
-            if (newPixel == pixel) {
-                newPixel = RGBBrightnessUtil.darkenColorHSV(pixel, multiplier);
-            }
-            return newPixel;
-        }
-    }, HSV("screen.daytime_switcher.algorithm.hsv") {
-
-        @Override
-        public int processPixel(int pixel, double multiplier) {
-            return RGBBrightnessUtil.darkenColorHSV(pixel, multiplier);
-        }
     }, GRAYSCALE_AND_HSL("screen.daytime_switcher.algorithm.grayscale_and_hsl") {
 
         @Override

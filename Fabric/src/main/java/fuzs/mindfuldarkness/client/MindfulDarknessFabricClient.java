@@ -6,6 +6,7 @@ import fuzs.mindfuldarkness.api.client.event.ExtraScreenEvents;
 import fuzs.mindfuldarkness.client.handler.DaytimeSwitchHandler;
 import fuzs.puzzleslib.client.core.ClientFactories;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
 
@@ -13,7 +14,6 @@ public class MindfulDarknessFabricClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ClientFactories.INSTANCE.clientModConstructor(MindfulDarkness.MOD_ID).accept(new MindfulDarknessClient());
         registerHandlers();
     }
 
@@ -26,5 +26,6 @@ public class MindfulDarknessFabricClient implements ClientModInitializer {
             });
         });
         ExtraScreenEvents.OPENING.register(DaytimeSwitchHandler::onScreenOpen);
+        ClientTickEvents.END_CLIENT_TICK.register(DaytimeSwitchHandler::onClientTick$End);
     }
 }

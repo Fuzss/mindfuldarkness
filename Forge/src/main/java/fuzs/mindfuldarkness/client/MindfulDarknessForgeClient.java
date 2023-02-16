@@ -8,6 +8,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
@@ -17,7 +18,6 @@ public class MindfulDarknessForgeClient {
 
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
-        ClientFactories.INSTANCE.clientModConstructor(MindfulDarkness.MOD_ID).accept(new MindfulDarknessClient());
         registerHandlers();
     }
 
@@ -39,6 +39,9 @@ public class MindfulDarknessForgeClient {
                     evt.setNewScreen(newScreen);
                 }
             });
+        });
+        MinecraftForge.EVENT_BUS.addListener((final TickEvent.ClientTickEvent evt) -> {
+            if (evt.phase == TickEvent.Phase.END) DaytimeSwitchHandler.onClientTick$End(Minecraft.getInstance());
         });
     }
 }
