@@ -3,9 +3,8 @@ package fuzs.mindfuldarkness.client.packs.resources;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.NativeImage;
 import fuzs.mindfuldarkness.MindfulDarkness;
-import fuzs.mindfuldarkness.client.util.PixelDarkener;
 import fuzs.mindfuldarkness.client.handler.ColorChangedResourcesHandler;
-import fuzs.mindfuldarkness.client.handler.DaytimeSwitchHandler;
+import fuzs.mindfuldarkness.client.util.PixelDarkener;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
@@ -83,8 +82,7 @@ public class ColorChangingResourceManager implements CloseableResourceManager {
     }
 
     private static ByteArrayInputStream adjustImage(Resource resource, double textureDarkness, PixelDarkener algorithm) {
-        try (InputStream open = resource.open()) {
-            NativeImage image = NativeImage.read(open);
+        try (InputStream open = resource.open(); NativeImage image = NativeImage.read(open)) {
             for (int x = 0; x < image.getWidth(); x++) {
                 for (int y = 0; y < image.getHeight(); y++) {
                     int pixel = image.getPixelRGBA(x, y);

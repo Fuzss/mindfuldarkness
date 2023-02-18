@@ -40,7 +40,7 @@ public class PixelConfigScreen extends Screen {
         this.addRenderableWidget(new NewTextureButton(this.leftPos + 13, this.topPos + 32, 150, 20, clientConfig.darkeningAlgorithm.get().getComponent(), button -> {
             AbstractConfigValue<PixelDarkener> configValue = clientConfig.darkeningAlgorithm;
             int length = PixelDarkener.values().length;
-            PixelDarkener pixelDarkener = PixelDarkener.values()[((configValue.get().ordinal() + (hasShiftDown() ? -1 : 1)) + length) % length + length];
+            PixelDarkener pixelDarkener = PixelDarkener.values()[((configValue.get().ordinal() + (hasShiftDown() ? -1 : 1)) % length + length) % length];
             configValue.set(pixelDarkener);
             button.setMessage(pixelDarkener.getComponent());
             if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
