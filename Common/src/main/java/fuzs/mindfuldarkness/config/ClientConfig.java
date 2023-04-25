@@ -19,7 +19,7 @@ public class ClientConfig implements ConfigCore {
     public AbstractConfigValue<Double> fontBrightness;
     public AbstractConfigValue<PixelDarkener> darkeningAlgorithm;
     @Config(description = "Specifies gui paths and resources to darken. Use '*' as wildcard char. Directory boundaries will not be crossed. Begin with a namespace or skip namespace to apply to all namespaces. Begin with '!' to exclude matches.")
-    public List<String> paths = Lists.newArrayList("textures/gui/*.png", "!minecraft:textures/gui/icons.png", "!minecraft:textures/gui/options_background.png", "textures/gui/container/*.png");
+    public List<String> paths = Lists.newArrayList("textures/gui/*.png", "!minecraft:textures/gui/icons.png", "!minecraft:textures/gui/options_background.png", "textures/gui/container/*.png", "textures/gui/container/creative_inventory/*.png");
     @Config(description = "Do not add the dark mode toggle buttons to the top of every menu.")
     public boolean hideIngameSwitcher = false;
     @Config(name = "menu_blacklist", description = "Exclude certain menus from showing the dark mode switcher. Useful when the box intersects other screen elements.")

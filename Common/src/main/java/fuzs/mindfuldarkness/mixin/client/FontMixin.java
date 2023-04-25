@@ -16,12 +16,14 @@ abstract class FontMixin {
 
     @ModifyVariable(method = "adjustColor", at = @At("HEAD"))
     private static int adjustColor(int color) {
-        if (Minecraft.getInstance().screen != null && MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
-            double[] hspColorArray = RGBBrightnessUtil.unpackRGBToHSP(color);
-            double targetBrightness = MindfulDarkness.CONFIG.get(ClientConfig.class).fontBrightness.get();
-            if (hspColorArray[2] < targetBrightness) {
-                double[] rgbColorArray = HSPConversionUtil.HSPtoRGB(hspColorArray[0], hspColorArray[1], targetBrightness);
-                return RGBBrightnessUtil.packRGBColor(rgbColorArray);
+        if (Minecraft.getInstance().screen != null) {
+            if (MindfulDarkness.CONFIG.getHolder(ClientConfig.class).isAvailable() && MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
+                double[] hspColorArray = RGBBrightnessUtil.unpackRGBToHSP(color);
+                double targetBrightness = MindfulDarkness.CONFIG.get(ClientConfig.class).fontBrightness.get();
+                if (hspColorArray[2] < targetBrightness) {
+                    double[] rgbColorArray = HSPConversionUtil.HSPtoRGB(hspColorArray[0], hspColorArray[1], targetBrightness);
+                    return RGBBrightnessUtil.packRGBColor(rgbColorArray);
+                }
             }
         }
         return color;

@@ -70,7 +70,7 @@ public class ColorChangingResourceManager implements CloseableResourceManager {
         Optional<Resource> resource = this.resourceManager.getResource(location);
         if (resource.isPresent() && this.filter.test(location)) {
             ColorChangedResourcesHandler.INSTANCE.add(location);
-            if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
+            if (MindfulDarkness.CONFIG.getHolder(ClientConfig.class).isAvailable() && MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
                 double textureDarkness = MindfulDarkness.CONFIG.get(ClientConfig.class).textureDarkness.get();
                 PixelDarkener algorithm = MindfulDarkness.CONFIG.get(ClientConfig.class).darkeningAlgorithm.get();
                 ByteArrayInputStream inputStream = adjustImage(resource.get(), textureDarkness, algorithm);
