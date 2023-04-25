@@ -105,7 +105,7 @@ public class ColorChangingResourceManager implements CloseableResourceManager {
         List<String> normalized = Lists.newArrayList();
         paths: for (String path : paths) {
             if (path.startsWith("!")) continue;
-            path = path.replaceAll("\\.+:", "");
+            path = path.replaceAll(".+:", "");
             if (path.startsWith("/")) path = path.substring(1);
             if (path.endsWith("/")) path = path.substring(0, path.length() - 1);
             if (path.matches(".*\\.\\w*")) {

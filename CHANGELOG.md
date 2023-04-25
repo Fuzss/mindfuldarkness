@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog].
 
+## [v4.0.2-1.19.2] - 2023-04-25
+### Fixed
+- Fixed a typo that prevented namespaced paths from loading correctly for any texture changes to apply
+
 ## [v4.0.1-1.19.2] - 2023-04-25
 ### Fixed
 - Fixed occasional start-up crash on Forge
