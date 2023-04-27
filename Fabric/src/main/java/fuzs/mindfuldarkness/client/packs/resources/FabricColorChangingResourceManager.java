@@ -1,4 +1,4 @@
-package fuzs.mindfuldarkness.api.client.packs.resources;
+package fuzs.mindfuldarkness.client.packs.resources;
 
 import fuzs.mindfuldarkness.client.packs.resources.ColorChangingResourceManager;
 import net.fabricmc.fabric.impl.resource.loader.FabricLifecycledResourceManager;
