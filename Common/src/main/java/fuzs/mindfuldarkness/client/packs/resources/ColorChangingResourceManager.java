@@ -8,9 +8,7 @@ import fuzs.mindfuldarkness.client.util.PixelDarkener;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
-import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.Resource;
 
 import java.io.ByteArrayInputStream;
@@ -19,18 +17,13 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-// we need to extend net.minecraft.server.packs.resources.MultiPackResourceManager instead of just net.minecraft.server.packs.resources.CloseableResourceManager
-// since Fabric Api adds an interface which is required for the whole net.fabricmc.fabric.api.resource.ResourceManagerHelper to work
-// this makes a lot of unnecessary preparations in super constructor, but apart from that nothing is different from CloseableResourceManager
-public class ColorChangingResourceManager extends MultiPackResourceManager {
+public class ColorChangingResourceManager implements CloseableResourceManager {
     private final CloseableResourceManager resourceManager;
     private final Predicate<ResourceLocation> filter;
 
-    public ColorChangingResourceManager(PackType type, CloseableResourceManager resourceManager) {
-        super(type, resourceManager.listPacks().collect(Collectors.toList()));
+    public ColorChangingResourceManager(CloseableResourceManager resourceManager) {
         this.resourceManager = resourceManager;
         this.filter = getResourceLocationFilter();
     }
