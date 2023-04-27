@@ -2,10 +2,12 @@ package fuzs.mindfuldarkness.mixin.client;
 
 import fuzs.mindfuldarkness.client.packs.resources.ColorChangingResourceManager;
 import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.Unit;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,9 +22,12 @@ import java.util.concurrent.Executor;
 abstract class ReloadableResourceManagerMixin {
     @Shadow
     private CloseableResourceManager resources;
+    @Shadow
+    @Final
+    private PackType type;
 
     @Inject(method = "createReload", at = @At(value = "FIELD", target = "Lnet/minecraft/server/packs/resources/ReloadableResourceManager;resources:Lnet/minecraft/server/packs/resources/CloseableResourceManager;", ordinal = 2))
     public void createReload(Executor backgroundExecutor, Executor gameExecutor, CompletableFuture<Unit> waitingFor, List<PackResources> resourcePacks, CallbackInfoReturnable<ReloadInstance> callback) {
-        this.resources = new ColorChangingResourceManager(this.resources);
+        this.resources = new ColorChangingResourceManager(this.type, this.resources);
     }
 }
