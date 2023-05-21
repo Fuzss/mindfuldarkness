@@ -8,7 +8,7 @@
   ],
   "client": [
     "client.FontMixin",
-    "client.ReloadableResourceManagerMixin",
+    "client.MultiPackResourceManagerMixin",
     "client.accessor.AbstractContainerMenuAccessor",
     "client.accessor.TextureManagerAccessor"
   ],

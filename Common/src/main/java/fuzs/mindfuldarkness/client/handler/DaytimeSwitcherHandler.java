@@ -14,7 +14,6 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.Registry;
@@ -27,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
-public class DaytimeSwitchHandler {
+public class DaytimeSwitcherHandler {
     public static final ResourceLocation TEXTURE_LOCATION = MindfulDarkness.id("textures/gui/daytime_switcher.png");
 
     private static AbstractWidget[] buttons;
@@ -49,18 +48,9 @@ public class DaytimeSwitchHandler {
         if (newScreen instanceof AbstractContainerScreen<?> containerScreen && MindfulDarkness.CONFIG.get(ClientConfig.class).debugContainerTypes) {
             // don't use vanilla getter as it throws an UnsupportedOperationException for the player inventory
             MenuType<?> type = ((AbstractContainerMenuAccessor) containerScreen.getMenu()).mindfuldarkness$getMenuType();
-            String id = null;
             if (type != null) {
-                id = Registry.MENU.getKey(type).toString();
-            } else {
-                if (newScreen instanceof InventoryScreen) {
-                    id = "minecraft:inventory";
-                } else if (newScreen instanceof CreativeModeInventoryScreen) {
-                    id = "minecraft:creative_inventory";
-                }
-            }
-            if (id != null) {
-                Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("debug.menu.opening", ComponentUtils.wrapInSquareBrackets(Component.literal(id))));
+                Component component = Component.literal(Registry.MENU.getKey(type).toString());
+                Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("debug.menu.opening", ComponentUtils.wrapInSquareBrackets(component)));
             }
         }
         return Optional.empty();
@@ -80,7 +70,7 @@ public class DaytimeSwitchHandler {
     }
 
     private static boolean supportsDaytimeSwitcher(AbstractContainerScreen<?> containerScreen) {
-        if (MindfulDarkness.CONFIG.get(ClientConfig.class).hideIngameSwitcher) return false;
+        if (MindfulDarkness.CONFIG.get(ClientConfig.class).hideInGameSwitcher) return false;
         if (containerScreen.height >= CommonScreens.INSTANCE.getImageHeight(containerScreen) + 2 * 24) {
             if (containerScreen instanceof CreativeModeInventoryScreen) return false;
             MenuType<?> type = ((AbstractContainerMenuAccessor) containerScreen.getMenu()).mindfuldarkness$getMenuType();
@@ -118,13 +108,16 @@ public class DaytimeSwitchHandler {
     }
 
     private static void toggleThemeButtons(AbstractWidget lightThemeWidget, AbstractWidget darkThemeWidget, boolean toggleSetting) {
+        if (toggleSetting) activateDaytimeSwitch();
         boolean darkTheme = MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get();
-        if (toggleSetting) {
-            darkTheme = !darkTheme;
-            MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.set(darkTheme);
-            ColorChangedResourcesHandler.INSTANCE.recordedReset();
-        }
         lightThemeWidget.active = darkTheme;
         darkThemeWidget.active = !darkTheme;
+    }
+
+    public static void activateDaytimeSwitch() {
+        boolean darkTheme = MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get();
+        darkTheme = !darkTheme;
+        MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.set(darkTheme);
+        ColorChangedAssetsManager.INSTANCE.recordedReset();
     }
 }

@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog].
 
+## [v4.0.6-1.19.2] - 2023-05-21
+### Added
+- Added button to title and pause screens for toggling dark mode in-game even without an inventory menu being open
+### Fixed
+- Fixed compatibility with [Continuity](https://www.curseforge.com/minecraft/mc-mods/continuity)
+
 ## [v4.0.5-1.19.2] - 2023-04-27
 ### Fixed
 - Fixed compatibility with Quilt

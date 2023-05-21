@@ -7,11 +7,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 
-class ColorChangingResource extends Resource {
+public class ColorChangingResource extends Resource {
     private final Resource resource;
 
     public ColorChangingResource(Resource resource, IoSupplier<InputStream> streamSupplier) {
-        super(resource.sourcePackId(), streamSupplier, null);
+        super(resource.sourcePackId(), streamSupplier, () -> ResourceMetadata.EMPTY);
         this.resource = resource;
     }
 

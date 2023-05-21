@@ -5,8 +5,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.mindfuldarkness.MindfulDarkness;
 import fuzs.mindfuldarkness.client.gui.components.NewTextureButton;
 import fuzs.mindfuldarkness.client.gui.components.NewTextureSliderButton;
-import fuzs.mindfuldarkness.client.handler.ColorChangedResourcesHandler;
-import fuzs.mindfuldarkness.client.handler.DaytimeSwitchHandler;
+import fuzs.mindfuldarkness.client.handler.ColorChangedAssetsManager;
+import fuzs.mindfuldarkness.client.handler.DaytimeSwitcherHandler;
 import fuzs.mindfuldarkness.client.util.PixelDarkener;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import fuzs.puzzleslib.config.core.AbstractConfigValue;
@@ -18,8 +18,8 @@ public class PixelConfigScreen extends Screen {
     private static final Component ALGORITHM_COMPONENT = Component.translatable("screen.daytime_switcher.algorithm");
     private static final Component INTERFACE_DARKNESS_COMPONENT = Component.translatable("screen.daytime_switcher.interface_darkness");
     private static final Component FONT_DARKNESS_COMPONENT = Component.translatable("screen.daytime_switcher.front_brightness");
-    private final Screen lastScreen;
 
+    private final Screen lastScreen;
     protected int imageWidth = 176;
     protected int imageHeight = 166;
     protected int leftPos;
@@ -35,7 +35,7 @@ public class PixelConfigScreen extends Screen {
         super.init();
         this.leftPos = (this.width - this.imageWidth) / 2;
         this.topPos = (this.height - this.imageHeight) / 2;
-        DaytimeSwitchHandler.makeButtons(this.minecraft, this, this.leftPos, this.topPos, this.imageWidth, this::addRenderableWidget);
+        DaytimeSwitcherHandler.makeButtons(this.minecraft, this, this.leftPos, this.topPos, this.imageWidth, this::addRenderableWidget);
         ClientConfig clientConfig = MindfulDarkness.CONFIG.get(ClientConfig.class);
         this.addRenderableWidget(new NewTextureButton(this.leftPos + 13, this.topPos + 32, 150, 20, clientConfig.darkeningAlgorithm.get().getComponent(), button -> {
             AbstractConfigValue<PixelDarkener> configValue = clientConfig.darkeningAlgorithm;
@@ -44,7 +44,7 @@ public class PixelConfigScreen extends Screen {
             configValue.set(pixelDarkener);
             button.setMessage(pixelDarkener.getComponent());
             if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
-                ColorChangedResourcesHandler.INSTANCE.recordedReset();
+                ColorChangedAssetsManager.INSTANCE.recordedReset();
             }
         }));
         this.addRenderableWidget(new NewTextureSliderButton(this.leftPos + 13, this.topPos + 81, 150, 18, Component.empty(), clientConfig.textureDarkness.get()) {
@@ -58,7 +58,7 @@ public class PixelConfigScreen extends Screen {
             protected void applyValue() {
                 clientConfig.textureDarkness.set(this.value);
                 if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
-                    ColorChangedResourcesHandler.INSTANCE.recordedReset();
+                    ColorChangedAssetsManager.INSTANCE.recordedReset();
                 }
             }
         });
@@ -87,9 +87,9 @@ public class PixelConfigScreen extends Screen {
     protected void renderBg(PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, DaytimeSwitchHandler.TEXTURE_LOCATION);
+        RenderSystem.setShaderTexture(0, DaytimeSwitcherHandler.TEXTURE_LOCATION);
         this.blit(poseStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
-        DaytimeSwitchHandler.drawThemeBg(poseStack, this.leftPos, this.topPos, this.imageWidth);
+        DaytimeSwitcherHandler.drawThemeBg(poseStack, this.leftPos, this.topPos, this.imageWidth);
     }
 
     protected void renderLabels(PoseStack poseStack, int mouseX, int mouseY) {

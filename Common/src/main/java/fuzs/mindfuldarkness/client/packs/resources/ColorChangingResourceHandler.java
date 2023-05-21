@@ -3,74 +3,33 @@ package fuzs.mindfuldarkness.client.packs.resources;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.NativeImage;
 import fuzs.mindfuldarkness.MindfulDarkness;
-import fuzs.mindfuldarkness.client.handler.ColorChangedResourcesHandler;
+import fuzs.mindfuldarkness.client.handler.ColorChangedAssetsManager;
+import fuzs.mindfuldarkness.client.packs.resources.ColorChangingResource;
 import fuzs.mindfuldarkness.client.util.PixelDarkener;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.Resource;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
-public class ColorChangingResourceManager implements CloseableResourceManager {
-    private final CloseableResourceManager resourceManager;
-    private final Predicate<ResourceLocation> filter;
+public class ColorChangingResourceHandler {
+    @Nullable
+    private List<String> normalizedDomains;
+    @Nullable
+    private List<Function<String, Boolean>> validPaths;
 
-    public ColorChangingResourceManager(CloseableResourceManager resourceManager) {
-        this.resourceManager = resourceManager;
-        this.filter = getResourceLocationFilter();
-    }
-
-    private static Predicate<ResourceLocation> getResourceLocationFilter() {
-        List<String> paths = MindfulDarkness.CONFIG.get(ClientConfig.class).paths;
-        List<String> normalizedDomains = compileNormalizedDomains(paths);
-        List<Function<String, Boolean>> validPaths = compileValidPaths(paths);
-        return id -> matchesPath(normalizedDomains, validPaths, id);
-    }
-
-    @Override
-    public void close() {
-        this.resourceManager.close();
-    }
-
-    @Override
-    public Set<String> getNamespaces() {
-        return this.resourceManager.getNamespaces();
-    }
-
-    @Override
-    public List<Resource> getResourceStack(ResourceLocation location) {
-        return this.resourceManager.getResourceStack(location);
-    }
-
-    @Override
-    public Map<ResourceLocation, Resource> listResources(String path, Predicate<ResourceLocation> filter) {
-        return this.resourceManager.listResources(path, filter);
-    }
-
-    @Override
-    public Map<ResourceLocation, List<Resource>> listResourceStacks(String path, Predicate<ResourceLocation> filter) {
-        return this.resourceManager.listResourceStacks(path, filter);
-    }
-
-    @Override
-    public Stream<PackResources> listPacks() {
-        return this.resourceManager.listPacks();
-    }
-
-    @Override
-    public Optional<Resource> getResource(ResourceLocation location) {
-        Optional<Resource> resource = this.resourceManager.getResource(location);
-        if (resource.isPresent() && this.filter.test(location)) {
-            ColorChangedResourcesHandler.INSTANCE.add(location);
-            if (MindfulDarkness.CONFIG.getHolder(ClientConfig.class).isAvailable() && MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
+    public Optional<Resource> getResource(ResourceLocation location, Optional<Resource> resource) {
+        if (resource.isPresent() && this.matchesPath(location)) {
+            ColorChangedAssetsManager.INSTANCE.add(location);
+            if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
                 double textureDarkness = MindfulDarkness.CONFIG.get(ClientConfig.class).textureDarkness.get();
                 PixelDarkener algorithm = MindfulDarkness.CONFIG.get(ClientConfig.class).darkeningAlgorithm.get();
                 ByteArrayInputStream inputStream = adjustImage(resource.get(), textureDarkness, algorithm);
@@ -78,7 +37,7 @@ public class ColorChangingResourceManager implements CloseableResourceManager {
                 return Optional.of(newResource);
             }
         }
-        return resource;
+        return Optional.empty();
     }
 
     private static ByteArrayInputStream adjustImage(Resource resource, double textureDarkness, PixelDarkener algorithm) {
@@ -96,6 +55,16 @@ public class ColorChangingResourceManager implements CloseableResourceManager {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean matchesPath(ResourceLocation location) {
+        if (!MindfulDarkness.CONFIG.getHolder(ClientConfig.class).isAvailable()) return false;
+        if (this.normalizedDomains == null || this.validPaths == null) {
+            List<String> paths = MindfulDarkness.CONFIG.get(ClientConfig.class).paths;
+            this.normalizedDomains = compileNormalizedDomains(paths);
+            this.validPaths = compileValidPaths(paths);
+        }
+        return matchesPath(this.normalizedDomains, this.validPaths, location);
     }
 
     private static List<String> compileNormalizedDomains(List<String> paths) {

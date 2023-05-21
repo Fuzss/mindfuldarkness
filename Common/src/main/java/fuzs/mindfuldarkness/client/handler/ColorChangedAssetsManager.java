@@ -12,8 +12,8 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Map;
 import java.util.Set;
 
-public class ColorChangedResourcesHandler {
-    public static final ColorChangedResourcesHandler INSTANCE = new ColorChangedResourcesHandler();
+public class ColorChangedAssetsManager {
+    public static final ColorChangedAssetsManager INSTANCE = new ColorChangedAssetsManager();
 
     private final Set<ResourceLocation> colorChangingTextures = Sets.newHashSet();
 
