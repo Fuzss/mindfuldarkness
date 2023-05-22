@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog].
 
+## [v4.0.7-1.19.2] - 2023-05-22
+### Fixed
+- Fixed new menu dark mode toggle button overlapping with buttons added by other mods such as [Mod Menu](https://modrinth.com/mod/modmenu)
+
 ## [v4.0.6-1.19.2] - 2023-05-21
 ### Added
 - Added button to title and pause screens for toggling dark mode in-game even without an inventory menu being open
