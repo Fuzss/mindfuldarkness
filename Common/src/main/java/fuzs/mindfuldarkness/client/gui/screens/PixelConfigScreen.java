@@ -10,6 +10,7 @@ import fuzs.mindfuldarkness.client.handler.DaytimeSwitcherHandler;
 import fuzs.mindfuldarkness.client.util.PixelDarkener;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -55,7 +56,7 @@ public class PixelConfigScreen extends Screen {
 
             @Override
             protected void updateMessage() {
-
+                this.setTooltip(Tooltip.create(Component.literal(String.format("%.0f%%", this.value * 100.0))));
             }
 
             @Override
@@ -65,19 +66,19 @@ public class PixelConfigScreen extends Screen {
                     ColorChangedAssetsManager.INSTANCE.recordedReset();
                 }
             }
-        });
+        }).setTooltip(Tooltip.create(Component.literal(String.format("%.0f%%", clientConfig.textureDarkness.get() * 100.0))));
         this.addRenderableWidget(new NewTextureSliderButton(this.leftPos + 13, this.topPos + 129, 150, 18, Component.empty(), clientConfig.fontBrightness.get()) {
 
             @Override
             protected void updateMessage() {
-
+                this.setTooltip(Tooltip.create(Component.literal(String.format("%.0f%%", this.value * 100.0))));
             }
 
             @Override
             protected void applyValue() {
                 clientConfig.fontBrightness.set(this.value);
             }
-        });
+        }).setTooltip(Tooltip.create(Component.literal(String.format("%.0f%%", clientConfig.fontBrightness.get() * 100.0))));
     }
 
     @Override
@@ -92,7 +93,7 @@ public class PixelConfigScreen extends Screen {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, DaytimeSwitcherHandler.TEXTURE_LOCATION);
-        this.blit(poseStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+        blit(poseStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
         DaytimeSwitcherHandler.drawThemeBg(poseStack, this.leftPos, this.topPos, this.imageWidth);
     }
 

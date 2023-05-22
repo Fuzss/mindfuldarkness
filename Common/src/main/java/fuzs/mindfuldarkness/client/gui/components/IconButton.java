@@ -2,41 +2,29 @@ package fuzs.mindfuldarkness.client.gui.components;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.resources.ResourceLocation;
 
-public class IconButton extends Button {
-    private final ResourceLocation resourceLocation;
+public class IconButton extends ImageButton {
     protected int xTexStart;
     protected int yTexStart;
-    private final int yDiffTex;
-    private final int textureWidth;
-    private final int textureHeight;
 
-    public IconButton(int x, int y, int width, int height, int xTexStart, int yTexStart, int yDiffTex, ResourceLocation resourceLocation, Button.OnPress onPress) {
-        this(x, y, width, height, xTexStart, yTexStart, yDiffTex, resourceLocation, 256, 256, onPress);
-    }
-
-    public IconButton(int x, int y, int width, int height, int xTexStart, int yTexStart, int yDiffTex, ResourceLocation resourceLocation, int textureWidth, int textureHeight, Button.OnPress onPress) {
-        this(x, y, width, height, xTexStart, yTexStart, yDiffTex, resourceLocation, textureWidth, textureHeight, onPress, CommonComponents.EMPTY);
-    }
-
-    public IconButton(int x, int y, int width, int height, int xTexStart, int yTexStart, ResourceLocation resourceLocation, Button.OnPress onPress) {
-        this(x, y, width, height, xTexStart, yTexStart, height, resourceLocation, 256, 256, onPress, CommonComponents.EMPTY);
-    }
-
-    public IconButton(int x, int y, int width, int height, int xTexStart, int yTexStart, int yDiffTex, ResourceLocation resourceLocation, int textureWidth, int textureHeight, Button.OnPress onPress, Component component) {
-        super(x, y, width, height, component, onPress, DEFAULT_NARRATION);
-        this.textureWidth = textureWidth;
-        this.textureHeight = textureHeight;
+    public IconButton(int x, int y, int width, int height, int xTexStart, int yTexStart, ResourceLocation resourceLocation, OnPress onPress) {
+        super(x, y, width, height, xTexStart, yTexStart, resourceLocation, onPress);
         this.xTexStart = xTexStart;
         this.yTexStart = yTexStart;
-        this.yDiffTex = yDiffTex;
-        this.resourceLocation = resourceLocation;
+    }
+
+    public IconButton(int x, int y, int width, int height, int xTexStart, int yTexStart, int yDiffTex, ResourceLocation resourceLocation, OnPress onPress) {
+        super(x, y, width, height, xTexStart, yTexStart, yDiffTex, resourceLocation, onPress);
+        this.xTexStart = xTexStart;
+        this.yTexStart = yTexStart;
+    }
+
+    public IconButton(int x, int y, int width, int height, int xTexStart, int yTexStart, int yDiffTex, ResourceLocation resourceLocation, int textureWidth, int textureHeight, OnPress onPress) {
+        super(x, y, width, height, xTexStart, yTexStart, yDiffTex, resourceLocation, textureWidth, textureHeight, onPress);
+        this.xTexStart = xTexStart;
+        this.yTexStart = yTexStart;
     }
 
     public void setTexture(int textureX, int textureY) {
@@ -45,20 +33,37 @@ public class IconButton extends Button {
     }
 
     @Override
-    public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        Minecraft minecraft = Minecraft.getInstance();
-        int index = this.getYImage(this.isHoveredOrFocused());
+    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+        RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
-        this.blit(poseStack, this.getX(), this.getY(), 0, 46 + index * 20, this.width / 2, this.height);
-        this.blit(poseStack, this.getX() + this.width / 2, this.getY(), 200 - this.width / 2, 46 + index * 20, this.width / 2, this.height);
-        this.renderBg(poseStack, minecraft, mouseX, mouseY);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, this.resourceLocation);
-        blit(poseStack, this.getX(), this.getY(), this.xTexStart, this.yTexStart + index * this.yDiffTex, this.width, this.height, this.textureWidth, this.textureHeight);
+        blitNineSliced(poseStack, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, this.getTextureY());
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        this.renderTexture(poseStack, this.resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.yDiffTex, this.width, this.height, this.textureWidth, this.textureHeight);
+    }
+
+    @Override
+    public void renderTexture(PoseStack poseStack, ResourceLocation resourceLocation, int i, int j, int k, int l, int m, int n, int o, int p, int q) {
+        RenderSystem.setShaderTexture(0, resourceLocation);
+        int r = l + m;
+        if (!this.isActive()) {
+            r = l;
+        } else if (this.isHoveredOrFocused()) {
+            r = l + m * 2;
+        }
+
+        RenderSystem.enableDepthTest();
+        blit(poseStack, i, j, (float)k, (float)r, n, o, p, q);
+    }
+
+    private int getTextureY() {
+        int i = 1;
+        if (!this.active) {
+            i = 0;
+        } else if (this.isHoveredOrFocused()) {
+            i = 2;
+        }
+        return 46 + i * 20;
     }
 }

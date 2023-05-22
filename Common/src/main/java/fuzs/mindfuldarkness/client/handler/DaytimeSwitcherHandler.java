@@ -33,7 +33,7 @@ public class DaytimeSwitcherHandler {
 
     private static AbstractWidget[] buttons;
 
-    public static void onClientTick$End(Minecraft minecraft) {
+    public static void onEndTick(Minecraft minecraft) {
         if (buttons != null) {
             if (minecraft.screen instanceof AbstractContainerScreen<?> screen && screen instanceof RecipeUpdateListener) {
                 int leftPos = ScreenHelper.INSTANCE.getLeftPos(screen);
@@ -46,7 +46,7 @@ public class DaytimeSwitcherHandler {
         }
     }
 
-    public static EventResult onScreenOpen(@Nullable Screen oldScreen, DefaultedValue<Screen> newScreen) {
+    public static EventResult onScreenOpening(@Nullable Screen oldScreen, DefaultedValue<Screen> newScreen) {
         if (newScreen == null) buttons = null;
         if (newScreen instanceof AbstractContainerScreen<?> containerScreen && MindfulDarkness.CONFIG.get(ClientConfig.class).debugContainerTypes) {
             // don't use vanilla getter as it throws an UnsupportedOperationException for the player inventory
@@ -59,7 +59,7 @@ public class DaytimeSwitcherHandler {
         return EventResult.PASS;
     }
 
-    public static void onContainerScreen$Render$Background(AbstractContainerScreen<?> screen, PoseStack poseStack, int mouseX, int mouseY) {
+    public static void onDrawBackground(AbstractContainerScreen<?> screen, PoseStack poseStack, int mouseX, int mouseY) {
         if (supportsDaytimeSwitcher(screen)) {
             int leftPos = ScreenHelper.INSTANCE.getLeftPos(screen);
             int topPos = ScreenHelper.INSTANCE.getTopPos(screen);
@@ -85,7 +85,7 @@ public class DaytimeSwitcherHandler {
         return false;
     }
 
-    public static void onScreenInit$Post(Minecraft minecraft, Screen screen, int screenWidth, int screenHeight, List<AbstractWidget> widgets, Consumer<AbstractWidget> addWidget, Consumer<AbstractWidget> removeWidget) {
+    public static void onAfterInit(Minecraft minecraft, Screen screen, int screenWidth, int screenHeight, List<AbstractWidget> widgets, Consumer<AbstractWidget> addWidget, Consumer<AbstractWidget> removeWidget) {
         if (screen instanceof AbstractContainerScreen<?> containerScreen && supportsDaytimeSwitcher(containerScreen)) {
             int leftPos = ScreenHelper.INSTANCE.getLeftPos(containerScreen);
             int topPos = ScreenHelper.INSTANCE.getTopPos(containerScreen);

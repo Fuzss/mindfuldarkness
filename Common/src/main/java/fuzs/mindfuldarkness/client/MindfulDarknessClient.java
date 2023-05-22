@@ -17,10 +17,10 @@ public class MindfulDarknessClient implements ClientModConstructor {
     }
 
     private static void registerHandlers() {
-        ContainerScreenEvents.BACKGROUND.register(DaytimeSwitcherHandler::onContainerScreen$Render$Background);
-        ScreenEvents.AFTER_INIT.register(DaytimeSwitcherHandler::onScreenInit$Post);
-        ScreenEvents.AFTER_INIT.register(EventPhase.AFTER, DaytimeMenuHandler::onScreenInit$Post);
-        ScreenOpeningCallback.EVENT.register(DaytimeSwitcherHandler::onScreenOpen);
-        ClientTickEvents.END.register(DaytimeSwitcherHandler::onClientTick$End);
+        ContainerScreenEvents.BACKGROUND.register(DaytimeSwitcherHandler::onDrawBackground);
+        ScreenEvents.AFTER_INIT.register(DaytimeSwitcherHandler::onAfterInit);
+        ScreenEvents.AFTER_INIT.register(EventPhase.AFTER, DaytimeMenuHandler::onAfterInit);
+        ScreenOpeningCallback.EVENT.register(DaytimeSwitcherHandler::onScreenOpening);
+        ClientTickEvents.END.register(DaytimeSwitcherHandler::onEndTick);
     }
 }

@@ -62,9 +62,9 @@ public class RGBBrightnessUtil {
 
     public static int multiplyColorComponentsBy(int packedColor, double multiplier, boolean onlyGrayscale) {
         multiplier = Math.max(multiplier, 0.0);
-        int r = NativeImage.getR(packedColor);
-        int g = NativeImage.getG(packedColor);
-        int b = NativeImage.getB(packedColor);
+        int r = getR(packedColor);
+        int g = getG(packedColor);
+        int b = getB(packedColor);
         if (!onlyGrayscale || isGrayscaleColor(r, g, b)) {
             r = (int) Math.min(r * multiplier, 255);
             g = (int) Math.min(g * multiplier, 255);
@@ -72,6 +72,22 @@ public class RGBBrightnessUtil {
             return r << 16 | g << 8 | b;
         }
         return packedColor;
+    }
+
+    public static int getA(int abgrColor) {
+        return abgrColor >> 24 & 255;
+    }
+
+    public static int getR(int abgrColor) {
+        return abgrColor >> 0 & 255;
+    }
+
+    public static int getG(int abgrColor) {
+        return abgrColor >> 8 & 255;
+    }
+
+    public static int getB(int abgrColor) {
+        return abgrColor >> 16 & 255;
     }
 
     private static boolean isGrayscaleColor(int r, int g, int b) {

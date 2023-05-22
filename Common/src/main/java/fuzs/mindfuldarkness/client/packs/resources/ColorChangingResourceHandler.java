@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import fuzs.mindfuldarkness.MindfulDarkness;
 import fuzs.mindfuldarkness.client.handler.ColorChangedAssetsManager;
 import fuzs.mindfuldarkness.client.util.PixelDarkener;
+import fuzs.mindfuldarkness.client.util.RGBBrightnessUtil;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -44,7 +45,7 @@ public class ColorChangingResourceHandler {
             for (int x = 0; x < image.getWidth(); x++) {
                 for (int y = 0; y < image.getHeight(); y++) {
                     int pixel = image.getPixelRGBA(x, y);
-                    int alpha = NativeImage.getA(pixel);
+                    int alpha = RGBBrightnessUtil.getA(pixel);
                     if (alpha != 0) {
                         image.setPixelRGBA(x, y, algorithm.processPixel(pixel, textureDarkness) | alpha << 24);
                     }
