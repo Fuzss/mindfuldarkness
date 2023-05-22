@@ -25,12 +25,12 @@ public abstract class NewTextureSliderButton extends AbstractSliderButton {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        this.blit(poseStack, this.x + 2, this.y + 2, 101, 226, (this.width - 4) / 2, this.height - 4);
-        this.blit(poseStack, this.x + this.width / 2, this.y + 2, 101 + 146 - (this.width - 4) / 2, 226, (this.width - 4) / 2, this.height - 4);
+        this.blit(poseStack, this.getX() + 2, this.getY() + 2, 101, 226, (this.width - 4) / 2, this.height - 4);
+        this.blit(poseStack, this.getX() + this.width / 2, this.getY() + 2, 101 + 146 - (this.width - 4) / 2, 226, (this.width - 4) / 2, this.height - 4);
         int l = (this.isHoveredOrFocused() ? 2 : 1) * 18;
-        this.blit(poseStack, this.x + (int)(this.value * (double)(this.width - 18)), this.y, 176, 57 + l, 18, 18);
+        this.blit(poseStack, this.getX() + (int)(this.value * (double)(this.width - 18)), this.getY(), 176, 57 + l, 18, 18);
         int j = this.active ? 16777215 : 10526880;
-        drawCenteredString(poseStack, font, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
+        drawCenteredString(poseStack, font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
     }
 
     public void onClick(double mouseX, double mouseY) {
@@ -48,7 +48,7 @@ public abstract class NewTextureSliderButton extends AbstractSliderButton {
     }
 
     private void setValueFromMouse(double mouseX) {
-        this.setValue((mouseX - (double)(this.x + 9)) / (double)(this.width - 18));
+        this.setValue((mouseX - (double)(this.getX() + 9)) / (double)(this.width - 18));
     }
 
     private void setValue(double value) {

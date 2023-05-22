@@ -17,10 +17,6 @@ public class IconButton extends Button {
     private final int textureWidth;
     private final int textureHeight;
 
-    public IconButton(int x, int y, int width, int height, int xTexStart, int yTexStart, ResourceLocation resourceLocation, Button.OnPress onPress) {
-        this(x, y, width, height, xTexStart, yTexStart, height, resourceLocation, 256, 256, onPress);
-    }
-
     public IconButton(int x, int y, int width, int height, int xTexStart, int yTexStart, int yDiffTex, ResourceLocation resourceLocation, Button.OnPress onPress) {
         this(x, y, width, height, xTexStart, yTexStart, yDiffTex, resourceLocation, 256, 256, onPress);
     }
@@ -29,27 +25,18 @@ public class IconButton extends Button {
         this(x, y, width, height, xTexStart, yTexStart, yDiffTex, resourceLocation, textureWidth, textureHeight, onPress, CommonComponents.EMPTY);
     }
 
+    public IconButton(int x, int y, int width, int height, int xTexStart, int yTexStart, ResourceLocation resourceLocation, Button.OnPress onPress) {
+        this(x, y, width, height, xTexStart, yTexStart, height, resourceLocation, 256, 256, onPress, CommonComponents.EMPTY);
+    }
+
     public IconButton(int x, int y, int width, int height, int xTexStart, int yTexStart, int yDiffTex, ResourceLocation resourceLocation, int textureWidth, int textureHeight, Button.OnPress onPress, Component component) {
-        this(x, y, width, height, xTexStart, yTexStart, yDiffTex, resourceLocation, textureWidth, textureHeight, onPress, NO_TOOLTIP, component);
-    }
-
-    public IconButton(int x, int y, int width, int height, int xTexStart, int yTexStart, ResourceLocation resourceLocation, Button.OnPress onPress, Button.OnTooltip onTooltip) {
-        this(x, y, width, height, xTexStart, yTexStart, height, resourceLocation, 256, 256, onPress, onTooltip, CommonComponents.EMPTY);
-    }
-
-    public IconButton(int x, int y, int width, int height, int xTexStart, int yTexStart, int yDiffTex, ResourceLocation resourceLocation, int textureWidth, int textureHeight, Button.OnPress onPress, Button.OnTooltip onTooltip, Component component) {
-        super(x, y, width, height, component, onPress, onTooltip);
+        super(x, y, width, height, component, onPress, DEFAULT_NARRATION);
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
         this.xTexStart = xTexStart;
         this.yTexStart = yTexStart;
         this.yDiffTex = yDiffTex;
         this.resourceLocation = resourceLocation;
-    }
-
-    public void setPosition(int x, int y) {
-        this.x = x;
-        this.y = y;
     }
 
     public void setTexture(int textureX, int textureY) {
@@ -67,14 +54,11 @@ public class IconButton extends Button {
         RenderSystem.enableDepthTest();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
-        this.blit(poseStack, this.x, this.y, 0, 46 + index * 20, this.width / 2, this.height);
-        this.blit(poseStack, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + index * 20, this.width / 2, this.height);
+        this.blit(poseStack, this.getX(), this.getY(), 0, 46 + index * 20, this.width / 2, this.height);
+        this.blit(poseStack, this.getX() + this.width / 2, this.getY(), 200 - this.width / 2, 46 + index * 20, this.width / 2, this.height);
         this.renderBg(poseStack, minecraft, mouseX, mouseY);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, this.resourceLocation);
-        blit(poseStack, this.x, this.y, this.xTexStart, this.yTexStart + index * this.yDiffTex, this.width, this.height, this.textureWidth, this.textureHeight);
-        if (this.isHoveredOrFocused()) {
-            this.renderToolTip(poseStack, mouseX, mouseY);
-        }
+        blit(poseStack, this.getX(), this.getY(), this.xTexStart, this.yTexStart + index * this.yDiffTex, this.width, this.height, this.textureWidth, this.textureHeight);
     }
 }

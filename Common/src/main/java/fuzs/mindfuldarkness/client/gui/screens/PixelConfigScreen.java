@@ -9,10 +9,11 @@ import fuzs.mindfuldarkness.client.handler.ColorChangedAssetsManager;
 import fuzs.mindfuldarkness.client.handler.DaytimeSwitcherHandler;
 import fuzs.mindfuldarkness.client.util.PixelDarkener;
 import fuzs.mindfuldarkness.config.ClientConfig;
-import fuzs.puzzleslib.config.core.AbstractConfigValue;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public class PixelConfigScreen extends Screen {
     private static final Component ALGORITHM_COMPONENT = Component.translatable("screen.daytime_switcher.algorithm");
@@ -35,10 +36,13 @@ public class PixelConfigScreen extends Screen {
         super.init();
         this.leftPos = (this.width - this.imageWidth) / 2;
         this.topPos = (this.height - this.imageHeight) / 2;
-        DaytimeSwitcherHandler.makeButtons(this.minecraft, this, this.leftPos, this.topPos, this.imageWidth, this::addRenderableWidget);
+        AbstractWidget[] buttons = DaytimeSwitcherHandler.makeButtons(this.minecraft, this, this.leftPos, this.topPos, this.imageWidth);
+        for (AbstractWidget button : buttons) {
+            this.addRenderableWidget(button);
+        }
         ClientConfig clientConfig = MindfulDarkness.CONFIG.get(ClientConfig.class);
         this.addRenderableWidget(new NewTextureButton(this.leftPos + 13, this.topPos + 32, 150, 20, clientConfig.darkeningAlgorithm.get().getComponent(), button -> {
-            AbstractConfigValue<PixelDarkener> configValue = clientConfig.darkeningAlgorithm;
+            ForgeConfigSpec.EnumValue<PixelDarkener> configValue = clientConfig.darkeningAlgorithm;
             int length = PixelDarkener.values().length;
             PixelDarkener pixelDarkener = PixelDarkener.values()[((configValue.get().ordinal() + (hasShiftDown() ? -1 : 1)) % length + length) % length];
             configValue.set(pixelDarkener);

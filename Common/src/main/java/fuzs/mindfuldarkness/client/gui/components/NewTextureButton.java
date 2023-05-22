@@ -15,7 +15,7 @@ import net.minecraft.util.Mth;
 public class NewTextureButton extends Button {
 
     public NewTextureButton(int i, int j, int k, int l, Component component, OnPress onPress) {
-        super(i, j, k, l, component, onPress);
+        super(i, j, k, l, component, onPress, DEFAULT_NARRATION);
     }
 
     @Override
@@ -34,14 +34,11 @@ public class NewTextureButton extends Button {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        this.blit(poseStack, this.x, this.y, 0, 166 + i * 20, this.width / 2, this.height);
-        this.blit(poseStack, this.x + this.width / 2, this.y, 200 - this.width / 2, 166 + i * 20, this.width / 2, this.height);
+        this.blit(poseStack, this.getX(), this.getY(), 0, 166 + i * 20, this.width / 2, this.height);
+        this.blit(poseStack, this.getX() + this.width / 2, this.getY(), 200 - this.width / 2, 166 + i * 20, this.width / 2, this.height);
         this.renderBg(poseStack, minecraft, mouseX, mouseY);
         final int j = this.active && this.isHoveredOrFocused() ? ChatFormatting.YELLOW.getColor() : 4210752;
-        drawCenteredString(poseStack, font, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24, false);
-        if (this.isHoveredOrFocused()) {
-            this.renderToolTip(poseStack, mouseX, mouseY);
-        }
+        drawCenteredString(poseStack, font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24, false);
     }
 
     public static void drawCenteredString(PoseStack poseStack, Font font, Component text, int x, int y, int color, boolean dropShadow) {

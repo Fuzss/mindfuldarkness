@@ -6,7 +6,9 @@ import fuzs.mindfuldarkness.MindfulDarkness;
 import fuzs.mindfuldarkness.client.gui.screens.PixelConfigScreen;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import fuzs.mindfuldarkness.mixin.client.accessor.AbstractContainerMenuAccessor;
-import fuzs.puzzleslib.client.gui.screens.CommonScreens;
+import fuzs.puzzleslib.api.client.screen.v2.ScreenHelper;
+import fuzs.puzzleslib.api.event.v1.core.EventResult;
+import fuzs.puzzleslib.api.event.v1.data.DefaultedValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -16,15 +18,15 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-import java.util.function.UnaryOperator;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class DaytimeSwitcherHandler {
     public static final ResourceLocation TEXTURE_LOCATION = MindfulDarkness.id("textures/gui/daytime_switcher.png");
@@ -34,31 +36,35 @@ public class DaytimeSwitcherHandler {
     public static void onClientTick$End(Minecraft minecraft) {
         if (buttons != null) {
             if (minecraft.screen instanceof AbstractContainerScreen<?> screen && screen instanceof RecipeUpdateListener) {
-                int leftPos = CommonScreens.INSTANCE.getLeftPos(screen), imageWidth = CommonScreens.INSTANCE.getImageWidth(screen);
-                buttons[0].x = leftPos + imageWidth - 3 - 21;
-                buttons[1].x = leftPos + imageWidth - 3 - 40;
-                buttons[2].x = leftPos + imageWidth - 3 - 68;
-                buttons[3].x = leftPos + imageWidth - 3 - 95;
+                int leftPos = ScreenHelper.INSTANCE.getLeftPos(screen);
+                int imageWidth = ScreenHelper.INSTANCE.getImageWidth(screen);
+                buttons[0].setX(leftPos + imageWidth - 3 - 21);
+                buttons[1].setX(leftPos + imageWidth - 3 - 40);
+                buttons[2].setX(leftPos + imageWidth - 3 - 68);
+                buttons[3].setX(leftPos + imageWidth - 3 - 95);
             }
         }
     }
 
-    public static Optional<Screen> onScreenOpen(@Nullable Screen oldScreen, @Nullable Screen newScreen) {
+    public static EventResult onScreenOpen(@Nullable Screen oldScreen, DefaultedValue<Screen> newScreen) {
         if (newScreen == null) buttons = null;
         if (newScreen instanceof AbstractContainerScreen<?> containerScreen && MindfulDarkness.CONFIG.get(ClientConfig.class).debugContainerTypes) {
             // don't use vanilla getter as it throws an UnsupportedOperationException for the player inventory
             MenuType<?> type = ((AbstractContainerMenuAccessor) containerScreen.getMenu()).mindfuldarkness$getMenuType();
             if (type != null) {
-                Component component = Component.literal(Registry.MENU.getKey(type).toString());
+                Component component = Component.literal(BuiltInRegistries.MENU.getKey(type).toString());
                 Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("debug.menu.opening", ComponentUtils.wrapInSquareBrackets(component)));
             }
         }
-        return Optional.empty();
+        return EventResult.PASS;
     }
 
     public static void onContainerScreen$Render$Background(AbstractContainerScreen<?> screen, PoseStack poseStack, int mouseX, int mouseY) {
         if (supportsDaytimeSwitcher(screen)) {
-            drawThemeBg(poseStack, CommonScreens.INSTANCE.getLeftPos(screen), CommonScreens.INSTANCE.getTopPos(screen), CommonScreens.INSTANCE.getImageWidth(screen));
+            int leftPos = ScreenHelper.INSTANCE.getLeftPos(screen);
+            int topPos = ScreenHelper.INSTANCE.getTopPos(screen);
+            int imageWidth = ScreenHelper.INSTANCE.getImageWidth(screen);
+            drawThemeBg(poseStack, leftPos, topPos, imageWidth);
         }
     }
 
@@ -71,7 +77,7 @@ public class DaytimeSwitcherHandler {
 
     private static boolean supportsDaytimeSwitcher(AbstractContainerScreen<?> containerScreen) {
         if (MindfulDarkness.CONFIG.get(ClientConfig.class).hideInGameSwitcher) return false;
-        if (containerScreen.height >= CommonScreens.INSTANCE.getImageHeight(containerScreen) + 2 * 24) {
+        if (containerScreen.height >= ScreenHelper.INSTANCE.getImageHeight(containerScreen) + 2 * 24) {
             if (containerScreen instanceof CreativeModeInventoryScreen) return false;
             MenuType<?> type = ((AbstractContainerMenuAccessor) containerScreen.getMenu()).mindfuldarkness$getMenuType();
             return type == null || !MindfulDarkness.CONFIG.get(ClientConfig.class).menuBlacklist.contains(type);
@@ -79,30 +85,36 @@ public class DaytimeSwitcherHandler {
         return false;
     }
 
-    public static void onScreenInit$Post(Screen screen, Minecraft minecraft, int width, int height, UnaryOperator<AbstractWidget> addWidget) {
+    public static void onScreenInit$Post(Minecraft minecraft, Screen screen, int screenWidth, int screenHeight, List<AbstractWidget> widgets, Consumer<AbstractWidget> addWidget, Consumer<AbstractWidget> removeWidget) {
         if (screen instanceof AbstractContainerScreen<?> containerScreen && supportsDaytimeSwitcher(containerScreen)) {
-            buttons = makeButtons(minecraft, screen, CommonScreens.INSTANCE.getLeftPos(containerScreen), CommonScreens.INSTANCE.getTopPos(containerScreen), CommonScreens.INSTANCE.getImageWidth(containerScreen), addWidget);
+            int leftPos = ScreenHelper.INSTANCE.getLeftPos(containerScreen);
+            int topPos = ScreenHelper.INSTANCE.getTopPos(containerScreen);
+            int imageWidth = ScreenHelper.INSTANCE.getImageWidth(containerScreen);
+            buttons = makeButtons(minecraft, screen, leftPos, topPos, imageWidth);
+            for (AbstractWidget button : buttons) {
+                addWidget.accept(button);
+            }
         }
     }
 
-    public static AbstractWidget[] makeButtons(Minecraft minecraft, Screen screen, int leftPos, int topPos, int imageWidth, UnaryOperator<AbstractWidget> addWidget) {
+    public static AbstractWidget[] makeButtons(Minecraft minecraft, Screen screen, int leftPos, int topPos, int imageWidth) {
         AbstractWidget[] abstractWidgets = new AbstractWidget[4];
-        abstractWidgets[0] = addWidget.apply(new ImageButton(leftPos + imageWidth - 3 - 21, topPos - 18, 15, 15, 224, 0, TEXTURE_LOCATION, button -> {
+        abstractWidgets[0] = new ImageButton(leftPos + imageWidth - 3 - 21, topPos - 18, 15, 15, 224, 0, TEXTURE_LOCATION, button -> {
             screen.onClose();
-        }));
-        abstractWidgets[1] = addWidget.apply(new ImageButton(leftPos + imageWidth - 3 - 40, topPos - 18, 15, 15, 239, 0, TEXTURE_LOCATION, button -> {
+        });
+        abstractWidgets[1] = new ImageButton(leftPos + imageWidth - 3 - 40, topPos - 18, 15, 15, 239, 0, TEXTURE_LOCATION, button -> {
             if (screen instanceof PixelConfigScreen pixelConfigScreen) {
                 pixelConfigScreen.closeToLastScreen();
             } else {
                 minecraft.setScreen(new PixelConfigScreen(screen));
             }
-        }));
-        abstractWidgets[2] = addWidget.apply(new ImageButton(leftPos + imageWidth - 3 - 68, topPos - 20, 24, 19, 200, 0, TEXTURE_LOCATION, button -> {
+        });
+        abstractWidgets[2] = new ImageButton(leftPos + imageWidth - 3 - 68, topPos - 20, 24, 19, 200, 0, TEXTURE_LOCATION, button -> {
             toggleThemeButtons(abstractWidgets[3], abstractWidgets[2], true);
-        }));
-        abstractWidgets[3] = addWidget.apply(new ImageButton(leftPos + imageWidth - 3 - 95, topPos - 20, 24, 19, 176, 0, TEXTURE_LOCATION, button -> {
+        });
+        abstractWidgets[3] = new ImageButton(leftPos + imageWidth - 3 - 95, topPos - 20, 24, 19, 176, 0, TEXTURE_LOCATION, button -> {
             toggleThemeButtons(abstractWidgets[3], abstractWidgets[2], true);
-        }));
+        });
         toggleThemeButtons(abstractWidgets[3], abstractWidgets[2], false);
         return abstractWidgets;
     }

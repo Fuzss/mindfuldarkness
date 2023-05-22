@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.NativeImage;
 import fuzs.mindfuldarkness.MindfulDarkness;
 import fuzs.mindfuldarkness.client.handler.ColorChangedAssetsManager;
-import fuzs.mindfuldarkness.client.packs.resources.ColorChangingResource;
 import fuzs.mindfuldarkness.client.util.PixelDarkener;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import net.minecraft.resources.ResourceLocation;
@@ -33,7 +32,7 @@ public class ColorChangingResourceHandler {
                 double textureDarkness = MindfulDarkness.CONFIG.get(ClientConfig.class).textureDarkness.get();
                 PixelDarkener algorithm = MindfulDarkness.CONFIG.get(ClientConfig.class).darkeningAlgorithm.get();
                 ByteArrayInputStream inputStream = adjustImage(resource.get(), textureDarkness, algorithm);
-                Resource newResource = new ColorChangingResource(resource.get(), () -> inputStream);
+                Resource newResource = new ForwardingResource(resource.get(), () -> inputStream);
                 return Optional.of(newResource);
             }
         }

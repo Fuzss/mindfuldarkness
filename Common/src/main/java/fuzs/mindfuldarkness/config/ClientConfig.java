@@ -2,26 +2,25 @@ package fuzs.mindfuldarkness.config;
 
 import com.google.common.collect.Lists;
 import fuzs.mindfuldarkness.client.util.PixelDarkener;
-import fuzs.puzzleslib.config.ConfigCore;
-import fuzs.puzzleslib.config.ValueCallback;
-import fuzs.puzzleslib.config.annotation.Config;
-import fuzs.puzzleslib.config.core.AbstractConfigBuilder;
-import fuzs.puzzleslib.config.core.AbstractConfigValue;
-import fuzs.puzzleslib.config.serialization.ConfigDataSet;
+import fuzs.puzzleslib.api.config.v3.Config;
+import fuzs.puzzleslib.api.config.v3.ConfigCore;
+import fuzs.puzzleslib.api.config.v3.ValueCallback;
+import fuzs.puzzleslib.api.config.v3.serialization.ConfigDataSet;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.List;
 import java.util.function.Predicate;
 
 public class ClientConfig implements ConfigCore {
-    public AbstractConfigValue<Boolean> darkTheme;
-    public AbstractConfigValue<Double> textureDarkness;
-    public AbstractConfigValue<Double> fontBrightness;
-    public AbstractConfigValue<PixelDarkener> darkeningAlgorithm;
+    public ForgeConfigSpec.BooleanValue darkTheme;
+    public ForgeConfigSpec.DoubleValue textureDarkness;
+    public ForgeConfigSpec.DoubleValue fontBrightness;
+    public ForgeConfigSpec.EnumValue<PixelDarkener> darkeningAlgorithm;
     @Config(description = "Specifies gui paths and resources to darken. Use '*' as wildcard char. Directory boundaries will not be crossed. Begin with a namespace or skip namespace to apply to all namespaces. Begin with '!' to exclude matches.")
     public List<String> paths = Lists.newArrayList("textures/gui/*.png", "!minecraft:textures/gui/icons.png", "!minecraft:textures/gui/options_background.png", "textures/gui/container/*.png", "minecraft:textures/gui/container/creative_inventory/*.png", "trinkets:textures/gui/slots/*.png");
     @Config(description = "Do not add the dark mode toggle buttons to the top of every menu.")
@@ -36,7 +35,7 @@ public class ClientConfig implements ConfigCore {
     public ConfigDataSet<MenuType<?>> menuBlacklist;
 
     @Override
-    public void addToBuilder(AbstractConfigBuilder builder, ValueCallback callback) {
+    public void addToBuilder(ForgeConfigSpec.Builder builder, ValueCallback callback) {
         this.darkTheme = builder.comment("Use a dark theme for the configuration screens.").define("dark_theme", false);
         this.textureDarkness = builder.comment("Percentage of original interface brightness to apply.").defineInRange("texture_darkness", 0.5, 0.0, 1.0);
         this.fontBrightness = builder.comment("The minimum brightness value of font while dark mode is enabled.").defineInRange("font_brightness", 0.75, 0.0, 1.0);
@@ -45,7 +44,7 @@ public class ClientConfig implements ConfigCore {
 
     @Override
     public void afterConfigReload() {
-        this.menuBlacklist = ConfigDataSet.of(Registry.MENU_REGISTRY, this.menuBlacklistRaw);
+        this.menuBlacklist = ConfigDataSet.from(Registries.MENU, this.menuBlacklistRaw);
     }
 
     public enum DaytimeButtonScreens {

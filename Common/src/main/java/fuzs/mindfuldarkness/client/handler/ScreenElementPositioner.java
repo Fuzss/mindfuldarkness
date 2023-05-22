@@ -1,7 +1,7 @@
 package fuzs.mindfuldarkness.client.handler;
 
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +32,7 @@ public final class ScreenElementPositioner {
      * @param translationKeys the translation keys to use for locating other widgets to place <code>element</code> next to, the key is retrieved from {@link AbstractWidget#getMessage()}; note that for widgets without a displayed {@link net.minecraft.network.chat.Component} (such as {@link net.minecraft.client.gui.components.ImageButton}) the narration key usually works, too
      * @return was positioning <code>element</code> successful; the element position has already been changed, all that's left to the caller is actually adding the element to the current screen; otherwise if positioning has failed <code>element</code> is unchanged
      */
-    public static boolean tryPositionElement(AbstractWidget element, List<? extends Widget> widgets, String... translationKeys) {
+    public static boolean tryPositionElement(AbstractWidget element, List<? extends GuiEventListener> widgets, String... translationKeys) {
         return tryPositionElement(element, widgets, false, translationKeys);
     }
 
@@ -46,7 +46,7 @@ public final class ScreenElementPositioner {
      * @param translationKeys    the translation keys to use for locating other widgets to place <code>element</code> next to, the key is retrieved from {@link AbstractWidget#getMessage()}; note that for widgets without a displayed {@link net.minecraft.network.chat.Component} (such as {@link net.minecraft.client.gui.components.ImageButton}) the narration key usually works, too
      * @return was positioning <code>element</code> successful; the element position has already been changed, all that's left to the caller is actually adding the element to the current screen; otherwise if positioning has failed <code>element</code> is unchanged
      */
-    public static boolean tryPositionElement(AbstractWidget element, List<? extends Widget> widgets, boolean tryPositionRightFirst, String... translationKeys) {
+    public static boolean tryPositionElement(AbstractWidget element, List<? extends GuiEventListener> widgets, boolean tryPositionRightFirst, String... translationKeys) {
         return tryPositionElement(element, widgets, tryPositionRightFirst, 4, translationKeys);
     }
 
@@ -61,9 +61,9 @@ public final class ScreenElementPositioner {
      * @param translationKeys    the translation keys to use for locating other widgets to place <code>element</code> next to, the key is retrieved from {@link AbstractWidget#getMessage()}; note that for widgets without a displayed {@link net.minecraft.network.chat.Component} (such as {@link net.minecraft.client.gui.components.ImageButton}) the narration key usually works, too
      * @return was positioning <code>element</code> successful; the element position has already been changed, all that's left to the caller is actually adding the element to the current screen; otherwise if positioning has failed <code>element</code> is unchanged
      */
-    public static boolean tryPositionElement(AbstractWidget element, List<? extends Widget> widgets, boolean tryPositionRightFirst, int horizontalOffset, String... translationKeys) {
-        final int originalX = element.x;
-        final int originalY = element.y;
+    public static boolean tryPositionElement(AbstractWidget element, List<? extends GuiEventListener> widgets, boolean tryPositionRightFirst, int horizontalOffset, String... translationKeys) {
+        final int originalX = element.getX();
+        final int originalY = element.getY();
         for (String translationKey : translationKeys) {
             AbstractWidget otherElement = findElement(widgets, translationKey);
             if (otherElement != null) {
@@ -79,8 +79,7 @@ public final class ScreenElementPositioner {
             }
         }
         // reset if we were not successful in finding a position next to another widget
-        element.x = originalX;
-        element.y = originalY;
+        element.setPosition(originalX, originalY);
         return false;
     }
 
@@ -93,17 +92,15 @@ public final class ScreenElementPositioner {
     }
 
     private static void moveToLeft(AbstractWidget element, AbstractWidget otherElement, int horizontalOffset) {
-        element.x = otherElement.x - element.getWidth() - horizontalOffset;
-        element.y = otherElement.y;
+        element.setPosition(otherElement.getX() - element.getWidth() - horizontalOffset, otherElement.getY());
     }
 
     private static void moveToRight(AbstractWidget element, AbstractWidget otherElement, int horizontalOffset) {
-        element.x = otherElement.x + otherElement.getWidth() + horizontalOffset;
-        element.y = otherElement.y;
+        element.setPosition(otherElement.getX() + otherElement.getWidth() + horizontalOffset, otherElement.getY());
     }
 
-    private static boolean noOverlapWithExisting(List<? extends Widget> widgets, AbstractWidget element) {
-        for (Widget widget : widgets) {
+    private static boolean noOverlapWithExisting(List<? extends GuiEventListener> widgets, AbstractWidget element) {
+        for (GuiEventListener widget : widgets) {
             if (widget instanceof AbstractWidget otherElement) {
                 if (intersection(element, otherElement)) {
                     return false;
@@ -114,16 +111,16 @@ public final class ScreenElementPositioner {
     }
 
     private static boolean intersection(AbstractWidget element, AbstractWidget otherElement) {
-        int i = Math.max(element.x, otherElement.x);
-        int j = Math.max(element.y, otherElement.y);
-        int k = Math.min(element.x + element.getWidth(), otherElement.x + otherElement.getWidth());
-        int l = Math.min(element.y + element.getHeight(), otherElement.y + otherElement.getHeight());
+        int i = Math.max(element.getX(), otherElement.getX());
+        int j = Math.max(element.getY(), otherElement.getY());
+        int k = Math.min(element.getX() + element.getWidth(), otherElement.getX() + otherElement.getWidth());
+        int l = Math.min(element.getY() + element.getHeight(), otherElement.getY() + otherElement.getHeight());
         return i < k && j < l;
     }
 
     @Nullable
-    private static AbstractWidget findElement(List<? extends Widget> widgets, String translationKey) {
-        for (Widget listener : widgets) {
+    private static AbstractWidget findElement(List<? extends GuiEventListener> widgets, String translationKey) {
+        for (GuiEventListener listener : widgets) {
             if (listener instanceof AbstractWidget widget && matchesTranslationKey(widget, translationKey)) {
                 return widget;
             }

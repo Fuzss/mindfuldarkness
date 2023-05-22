@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "package": "fuzs.mindfuldarkness.mixin",
   "refmap": "mindfuldarkness.refmap.json",
+  "plugin": "fuzs.mindfuldarkness.mixin.ModMixinConfigPlugin",
   "mixins": [
   ],
   "client": [

@@ -1,12 +1,12 @@
 package fuzs.mindfuldarkness;
 
-import fuzs.puzzleslib.core.CommonFactories;
+import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import net.fabricmc.api.ModInitializer;
 
 public class MindfulDarknessFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        CommonFactories.INSTANCE.modConstructor(MindfulDarkness.MOD_ID).accept(new MindfulDarkness());
+        ModConstructor.construct(MindfulDarkness.MOD_ID, MindfulDarkness::new);
     }
 }
