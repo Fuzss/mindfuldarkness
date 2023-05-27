@@ -8,6 +8,7 @@ import fuzs.mindfuldarkness.client.util.PixelDarkener;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
@@ -20,10 +21,25 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class ColorChangingResourceHandler {
+    public static final String VALID_RESOURCE_LOCATION_NAMESPACE = "[a-z0-9_.-]";
+    public static final String VALID_RESOURCE_LOCATION_PATH = "[a-z0-9/._-]";
+    /**
+     * Path may begin with '!' if it is an exclusion.
+     * <p>Path can optionally begin with '<code>namespace</code>:'.
+     * <p>Path can end with either a valid resource location path, or an optional resource location path followed by '/*',
+     * or just '*' if directed at root.
+     */
+    public static final String VALID_MINDFUL_DARKNESS_PATH = "^!?([a-z0-9_.-]+:)?([a-z0-9/_.-]+|(([a-z0-9/_.-]*/|)\\*(\\.\\w+)?))$";
+    public static final ColorChangingResourceHandler INSTANCE = new ColorChangingResourceHandler();
+
     @Nullable
     private List<String> normalizedDomains;
     @Nullable
     private List<Function<String, Boolean>> validPaths;
+
+    private ColorChangingResourceHandler() {
+
+    }
 
     public Optional<Resource> getResource(ResourceLocation location, Optional<Resource> resource) {
         if (resource.isPresent() && this.matchesPath(location)) {
@@ -56,14 +72,32 @@ public class ColorChangingResourceHandler {
         }
     }
 
+    public void clear() {
+        this.normalizedDomains = null;
+        this.validPaths = null;
+    }
+
     private boolean matchesPath(ResourceLocation location) {
         if (!MindfulDarkness.CONFIG.getHolder(ClientConfig.class).isAvailable()) return false;
-        if (this.normalizedDomains == null || this.validPaths == null) {
+        return matchesPath(this.getNormalizedDomains(), this.getValidPaths(), location);
+    }
+
+    private synchronized List<String> getNormalizedDomains() {
+        List<String> normalizedDomains = this.normalizedDomains;
+        if (normalizedDomains == null) {
             List<String> paths = MindfulDarkness.CONFIG.get(ClientConfig.class).paths;
-            this.normalizedDomains = compileNormalizedDomains(paths);
-            this.validPaths = compileValidPaths(paths);
+            this.normalizedDomains = normalizedDomains = compileNormalizedDomains(paths);
         }
-        return matchesPath(this.normalizedDomains, this.validPaths, location);
+        return normalizedDomains;
+    }
+
+    private synchronized List<Function<String, Boolean>> getValidPaths() {
+        List<Function<String, Boolean>> validPaths = this.validPaths;
+        if (validPaths == null) {
+            List<String> paths = MindfulDarkness.CONFIG.get(ClientConfig.class).paths;
+            this.validPaths = validPaths = compileValidPaths(paths);
+        }
+        return validPaths;
     }
 
     private static List<String> compileNormalizedDomains(List<String> paths) {
@@ -73,24 +107,33 @@ public class ColorChangingResourceHandler {
         List<String> normalized = Lists.newArrayList();
         paths: for (String path : paths) {
             if (path.startsWith("!")) continue;
+            // remove namespace, we do this 'optimization' globally
             path = path.replaceAll(".+:", "");
-            if (path.startsWith("/")) path = path.substring(1);
-            if (path.endsWith("/")) path = path.substring(0, path.length() - 1);
-            if (path.matches(".*\\.\\w*")) {
+            // remove file part, we only want to optimize for directories
+            // file part is not removed if there is no directory before it
+            if (path.matches(".+/(.+\\.\\w+|\\*(\\.\\w+)?)")) {
                 path = path.substring(0, path.lastIndexOf("/"));
             }
-            if (path.isEmpty()) continue;
-            ListIterator<String> iterator = normalized.listIterator();
-            while (iterator.hasNext()) {
-                String s = iterator.next();
-                if (s.startsWith(path)) {
-                    iterator.set(path);
-                    continue paths;
-                } else if (path.startsWith(s)) {
-                    continue paths;
-                }
+            if (path.startsWith("/")) {
+                path = path.substring(1);
             }
-            normalized.add(path);
+            if (path.endsWith("/")) {
+                path = path.substring(0, path.length() - 1);
+            }
+            if (!path.isEmpty()) {
+                // disable this when wildcard is in root, shouldn't really happen though
+                if (path.matches("\\*(\\.\\w+)?")) return List.of("");
+                ListIterator<String> iterator = normalized.listIterator();
+                while (iterator.hasNext()) {
+                    String s = iterator.next();
+                    String prefix = StringUtils.getCommonPrefix(s, path);
+                    if (!prefix.isEmpty() && (prefix.length() >= s.length() || s.charAt(prefix.length()) == '/')) {
+                        iterator.set(prefix);
+                        continue paths;
+                    }
+                }
+                normalized.add(path);
+            }
         }
         return normalized;
     }
@@ -101,9 +144,10 @@ public class ColorChangingResourceHandler {
         for (String path : paths) {
             boolean inverse = path.startsWith("!");
             if (inverse) path = path.substring(1);
-            if (!path.contains(":")) path = "\\w+:" + path;
-            path = path.replaceAll("\\*", "[^/]+").replaceAll("\\.", "\\\\.");
-            String filter = path;
+            if (!path.contains(":")) path = VALID_RESOURCE_LOCATION_NAMESPACE + "+:" + path;
+            // wildcard is only valid for files, so use regex match without '/' which vanilla normally supports
+            path = path.replaceAll("\\*", VALID_RESOURCE_LOCATION_NAMESPACE + "+").replaceAll("\\.", "\\\\.");
+            String filter = "^" + path + "$";
             pathFilters.add(s -> s.matches(filter) ? !inverse : null);
         }
         Collections.reverse(pathFilters);
@@ -112,6 +156,9 @@ public class ColorChangingResourceHandler {
 
     private static boolean matchesPath(List<String> domains, List<Function<String, Boolean>> filters, ResourceLocation resourceLocation) {
         String path = resourceLocation.toString();
+        // hardcode to png, otherwise we would mess with all sorts of files, even when they are no image
+        // implementation works for all file extensions otherwise if this check is removed
+        if (!path.endsWith(".png")) return false;
         for (String domain : domains) {
             if (resourceLocation.getPath().startsWith(domain)) {
                 for (Function<String, Boolean> filter : filters) {

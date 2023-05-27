@@ -26,7 +26,8 @@ abstract class MultiPackResourceManagerMixin {
     @Inject(method = "<init>", at = @At("TAIL"))
     public void init(PackType packType, List<PackResources> list, CallbackInfo callback) {
         if (packType == PackType.CLIENT_RESOURCES) {
-            this.mindfuldarkness$colorChangingHandler = new ColorChangingResourceHandler();
+            this.mindfuldarkness$colorChangingHandler = ColorChangingResourceHandler.INSTANCE;
+            this.mindfuldarkness$colorChangingHandler.clear();
         }
     }
 

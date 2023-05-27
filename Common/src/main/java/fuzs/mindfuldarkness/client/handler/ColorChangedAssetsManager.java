@@ -23,6 +23,7 @@ public class ColorChangedAssetsManager {
 
     private void reset() {
         TextureManager textureManager = Minecraft.getInstance().getTextureManager();
+        if (textureManager == null) return;
         Map<ResourceLocation, AbstractTexture> byPath = ((TextureManagerAccessor) textureManager).mindfuldarkness$getByPath();
         Set<Tickable> tickableTextures = ((TextureManagerAccessor) textureManager).mindfuldarkness$getTickableTextures();
         for (ResourceLocation path : this.colorChangingTextures) {

@@ -36,7 +36,6 @@ public class NewTextureButton extends Button {
         RenderSystem.enableDepthTest();
         this.blit(poseStack, this.getX(), this.getY(), 0, 166 + i * 20, this.width / 2, this.height);
         this.blit(poseStack, this.getX() + this.width / 2, this.getY(), 200 - this.width / 2, 166 + i * 20, this.width / 2, this.height);
-        this.renderBg(poseStack, minecraft, mouseX, mouseY);
         final int j = this.active && this.isHoveredOrFocused() ? ChatFormatting.YELLOW.getColor() : 4210752;
         drawCenteredString(poseStack, font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24, false);
     }
