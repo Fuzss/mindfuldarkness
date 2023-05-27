@@ -1,6 +1,9 @@
 package fuzs.mindfuldarkness.config;
 
 import com.google.common.collect.Lists;
+import fuzs.mindfuldarkness.MindfulDarkness;
+import fuzs.mindfuldarkness.client.handler.ColorChangedAssetsManager;
+import fuzs.mindfuldarkness.client.packs.resources.ColorChangingResourceHandler;
 import fuzs.mindfuldarkness.client.util.PixelDarkener;
 import fuzs.puzzleslib.config.ConfigCore;
 import fuzs.puzzleslib.config.ValueCallback;
@@ -22,8 +25,8 @@ public class ClientConfig implements ConfigCore {
     public AbstractConfigValue<Double> textureDarkness;
     public AbstractConfigValue<Double> fontBrightness;
     public AbstractConfigValue<PixelDarkener> darkeningAlgorithm;
-    @Config(description = "Specifies gui paths and resources to darken. Use '*' as wildcard char. Directory boundaries will not be crossed. Begin with a namespace or skip namespace to apply to all namespaces. Begin with '!' to exclude matches.")
-    public List<String> paths = Lists.newArrayList("textures/gui/*.png", "!minecraft:textures/gui/icons.png", "!minecraft:textures/gui/options_background.png", "textures/gui/container/*.png", "minecraft:textures/gui/container/creative_inventory/*.png", "trinkets:textures/gui/slots/*.png");
+    @Config(name = "paths", description = {"Specifies gui paths and resources to darken.", "End a path using '*' as a wildcard char to include every file (no nested directories) from that directory.", "Begin with a namespace or skip namespace to apply to all namespaces.", "Begin with '!' to exclude matches, list those exclusions after entries that would otherwise include them."})
+    List<String> pathsRaw = Lists.newArrayList("textures/gui/*", "!minecraft:textures/gui/icons.png", "!minecraft:textures/gui/options_background.png", "textures/gui/container/*", "minecraft:textures/gui/container/creative_inventory/*", "trinkets:textures/gui/slots/*", "craftingtweaks:gui.png", "dankstorage:textures/container/gui/*", "ae2:textures/guis/*");
     @Config(description = "Do not add the dark mode toggle buttons to the top of every menu.")
     public boolean hideInGameSwitcher = false;
     @Config(name = "menu_blacklist", description = "Exclude certain menus from showing the dark mode switcher. Useful when the box intersects other screen elements.")
@@ -33,6 +36,7 @@ public class ClientConfig implements ConfigCore {
     @Config(description = "Screens to add a dark mode toggle button to, so that toggling is possible outside of inventory menus.")
     public DaytimeButtonScreens darkModeToggleScreens = DaytimeButtonScreens.BOTH;
 
+    public List<String> paths;
     public ConfigDataSet<MenuType<?>> menuBlacklist;
 
     @Override
@@ -45,7 +49,17 @@ public class ClientConfig implements ConfigCore {
 
     @Override
     public void afterConfigReload() {
+        this.paths = this.pathsRaw.stream().filter(s -> {
+            if (!s.matches(ColorChangingResourceHandler.VALID_MINDFUL_DARKNESS_PATH)) {
+                MindfulDarkness.LOGGER.warn("'{}' is an invalid path and will be ignored", s);
+                return false;
+            } else {
+                return true;
+            }
+        }).toList();
         this.menuBlacklist = ConfigDataSet.of(Registry.MENU_REGISTRY, this.menuBlacklistRaw);
+        ColorChangedAssetsManager.INSTANCE.recordedReset();
+        ColorChangingResourceHandler.INSTANCE.clear();
     }
 
     public enum DaytimeButtonScreens {

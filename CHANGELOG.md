@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog].
 
+## [v4.0.8-1.19.2] - 2023-05-27
+### Fixed
+- Fixed including texture paths that lie in the root of `assets` crashing the game
+
 ## [v4.0.7-1.19.2] - 2023-05-22
 ### Fixed
 - Fixed new menu dark mode toggle button overlapping with buttons added by other mods such as [Mod Menu](https://modrinth.com/mod/modmenu)
