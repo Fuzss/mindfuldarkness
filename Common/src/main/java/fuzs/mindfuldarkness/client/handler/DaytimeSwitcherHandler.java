@@ -34,15 +34,22 @@ public class DaytimeSwitcherHandler {
     private static AbstractWidget[] buttons;
 
     public static void onEndTick(Minecraft minecraft) {
-        if (buttons != null) {
-            if (minecraft.screen instanceof AbstractContainerScreen<?> screen && screen instanceof RecipeUpdateListener) {
-                int leftPos = ScreenHelper.INSTANCE.getLeftPos(screen);
-                int imageWidth = ScreenHelper.INSTANCE.getImageWidth(screen);
-                buttons[0].setX(leftPos + imageWidth - 3 - 21);
-                buttons[1].setX(leftPos + imageWidth - 3 - 40);
-                buttons[2].setX(leftPos + imageWidth - 3 - 68);
-                buttons[3].setX(leftPos + imageWidth - 3 - 95);
-            }
+        setHorizontalButtonPosition(minecraft.screen);
+    }
+
+    public static void onAfterMouseClick(Screen screen, double mouseX, double mouseY, int button) {
+        setHorizontalButtonPosition(screen);
+    }
+
+    private static void setHorizontalButtonPosition(Screen screen) {
+        if (buttons == null) return;
+        if (screen instanceof AbstractContainerScreen<?> containerScreen && screen instanceof RecipeUpdateListener) {
+            int leftPos = ScreenHelper.INSTANCE.getLeftPos(containerScreen);
+            int imageWidth = ScreenHelper.INSTANCE.getImageWidth(containerScreen);
+            buttons[0].setX(leftPos + imageWidth - 3 - 21);
+            buttons[1].setX(leftPos + imageWidth - 3 - 40);
+            buttons[2].setX(leftPos + imageWidth - 3 - 68);
+            buttons[3].setX(leftPos + imageWidth - 3 - 95);
         }
     }
 
