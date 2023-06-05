@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog].
 
+## [v4.0.9-1.19.2] - 2023-06-05
+### Fixed
+- Fixed start-up crash when installed together with [ConnectedTexturesMod](https://www.curseforge.com/minecraft/mc-mods/ctm)
+
 ## [v4.0.8-1.19.2] - 2023-05-27
 ### Fixed
 - Fixed including texture paths that lie in the root of `assets` crashing the game
