@@ -79,7 +79,7 @@ public class ColorChangingResourceHandler {
     }
 
     private boolean matchesPath(ResourceLocation location) {
-        if (!MindfulDarkness.CONFIG.getHolder(ClientConfig.class).isAvailable() || MindfulDarkness.CONFIG.get(ClientConfig.class).paths == null) return false;
+        if (!MindfulDarkness.CONFIG.getHolder(ClientConfig.class).isAvailable()) return false;
         return matchesPath(this.getNormalizedDomains(), this.getValidPaths(), location);
     }
 

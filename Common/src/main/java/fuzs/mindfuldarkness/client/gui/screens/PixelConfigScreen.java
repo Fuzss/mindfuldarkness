@@ -1,7 +1,6 @@
 package fuzs.mindfuldarkness.client.gui.screens;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.mindfuldarkness.MindfulDarkness;
 import fuzs.mindfuldarkness.client.gui.components.NewTextureButton;
 import fuzs.mindfuldarkness.client.gui.components.NewTextureSliderButton;
@@ -9,10 +8,10 @@ import fuzs.mindfuldarkness.client.handler.ColorChangedAssetsManager;
 import fuzs.mindfuldarkness.client.handler.DaytimeSwitcherHandler;
 import fuzs.mindfuldarkness.client.util.PixelDarkener;
 import fuzs.mindfuldarkness.config.ClientConfig;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.ForgeConfigSpec;
 
@@ -82,25 +81,23 @@ public class PixelConfigScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(poseStack);
-        this.renderBg(poseStack, partialTick, mouseX, mouseY);
-        super.render(poseStack, mouseX, mouseY, partialTick);
-        this.renderLabels(poseStack, mouseX, mouseY);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(guiGraphics);
+        this.renderBg(guiGraphics, partialTick, mouseX, mouseY);
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        this.renderLabels(guiGraphics, mouseX, mouseY);
     }
 
-    protected void renderBg(PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, DaytimeSwitcherHandler.TEXTURE_LOCATION);
-        blit(poseStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
-        DaytimeSwitcherHandler.drawThemeBg(poseStack, this.leftPos, this.topPos, this.imageWidth);
+        guiGraphics.blit(DaytimeSwitcherHandler.TEXTURE_LOCATION, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+        DaytimeSwitcherHandler.drawThemeBg(guiGraphics, this.leftPos, this.topPos, this.imageWidth);
     }
 
-    protected void renderLabels(PoseStack poseStack, int mouseX, int mouseY) {
-        NewTextureButton.drawCenteredString(poseStack, this.font, ALGORITHM_COMPONENT, this.width / 2, this.topPos + 19, 4210752, false);
-        NewTextureButton.drawCenteredString(poseStack, this.font, INTERFACE_DARKNESS_COMPONENT, this.width / 2, this.topPos + 67, 4210752, false);
-        NewTextureButton.drawCenteredString(poseStack, this.font, FONT_DARKNESS_COMPONENT, this.width / 2, this.topPos + 115, 4210752, false);
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        NewTextureButton.drawCenteredString(guiGraphics, this.font, ALGORITHM_COMPONENT, this.width / 2, this.topPos + 19, 4210752, false);
+        NewTextureButton.drawCenteredString(guiGraphics, this.font, INTERFACE_DARKNESS_COMPONENT, this.width / 2, this.topPos + 67, 4210752, false);
+        NewTextureButton.drawCenteredString(guiGraphics, this.font, FONT_DARKNESS_COMPONENT, this.width / 2, this.topPos + 115, 4210752, false);
     }
 
     @Override

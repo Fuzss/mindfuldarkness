@@ -1,7 +1,6 @@
 package fuzs.mindfuldarkness.client.handler;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.mindfuldarkness.MindfulDarkness;
 import fuzs.mindfuldarkness.client.gui.screens.PixelConfigScreen;
 import fuzs.mindfuldarkness.config.ClientConfig;
@@ -10,14 +9,13 @@ import fuzs.puzzleslib.api.client.screen.v2.ScreenHelper;
 import fuzs.puzzleslib.api.event.v1.core.EventResult;
 import fuzs.puzzleslib.api.event.v1.data.DefaultedValue;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
@@ -66,20 +64,18 @@ public class DaytimeSwitcherHandler {
         return EventResult.PASS;
     }
 
-    public static void onDrawBackground(AbstractContainerScreen<?> screen, PoseStack poseStack, int mouseX, int mouseY) {
+    public static void onDrawBackground(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
         if (supportsDaytimeSwitcher(screen)) {
             int leftPos = ScreenHelper.INSTANCE.getLeftPos(screen);
             int topPos = ScreenHelper.INSTANCE.getTopPos(screen);
             int imageWidth = ScreenHelper.INSTANCE.getImageWidth(screen);
-            drawThemeBg(poseStack, leftPos, topPos, imageWidth);
+            drawThemeBg(guiGraphics, leftPos, topPos, imageWidth);
         }
     }
 
-    public static void drawThemeBg(PoseStack poseStack, int leftPos, int topPos, int imageWidth) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    public static void drawThemeBg(GuiGraphics guiGraphics, int leftPos, int topPos, int imageWidth) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE_LOCATION);
-        GuiComponent.blit(poseStack, leftPos + imageWidth - 3 - 101, topPos - 24, 0, 226, 101, 24, 256, 256);
+        guiGraphics.blit(TEXTURE_LOCATION, leftPos + imageWidth - 3 - 101, topPos - 24, 0, 226, 101, 24, 256, 256);
     }
 
     private static boolean supportsDaytimeSwitcher(AbstractContainerScreen<?> containerScreen) {
