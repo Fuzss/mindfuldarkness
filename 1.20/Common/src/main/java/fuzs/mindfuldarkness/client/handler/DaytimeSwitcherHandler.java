@@ -3,6 +3,7 @@ package fuzs.mindfuldarkness.client.handler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fuzs.mindfuldarkness.MindfulDarkness;
 import fuzs.mindfuldarkness.client.gui.screens.PixelConfigScreen;
+import fuzs.mindfuldarkness.client.util.ScreenIdentifierHelper;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import fuzs.mindfuldarkness.mixin.client.accessor.AbstractContainerMenuAccessor;
 import fuzs.puzzleslib.api.client.screen.v2.ScreenHelper;
@@ -52,13 +53,28 @@ public class DaytimeSwitcherHandler {
     }
 
     public static EventResult onScreenOpening(@Nullable Screen oldScreen, DefaultedValue<Screen> newScreen) {
-        if (newScreen == null) buttons = null;
-        if (newScreen instanceof AbstractContainerScreen<?> containerScreen && MindfulDarkness.CONFIG.get(ClientConfig.class).debugContainerTypes) {
+        Screen screen = newScreen.get();
+        if (screen == null) buttons = null;
+        Minecraft minecraft = Minecraft.getInstance();
+        if (screen != null && MindfulDarkness.CONFIG.get(ClientConfig.class).debugAllScreens) {
+            String identifier = ScreenIdentifierHelper.getScreenIdentifier(screen);
+            if (identifier != null) {
+                Component message = Component.translatable("screen.debug.identifier", ComponentUtils.wrapInSquareBrackets(Component.literal(identifier)));
+                // we don't need both as chat messages are logged automatically
+                if (minecraft.level != null) {
+                    minecraft.gui.getChat().addMessage(message);
+                } else {
+                    MindfulDarkness.LOGGER.info(message.getString());
+                }
+            }
+        }
+        if (screen instanceof AbstractContainerScreen<?> containerScreen && MindfulDarkness.CONFIG.get(ClientConfig.class).debugContainerTypes) {
             // don't use vanilla getter as it throws an UnsupportedOperationException for the player inventory
             MenuType<?> type = ((AbstractContainerMenuAccessor) containerScreen.getMenu()).mindfuldarkness$getMenuType();
             if (type != null) {
                 Component component = Component.literal(BuiltInRegistries.MENU.getKey(type).toString());
-                Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("debug.menu.opening", ComponentUtils.wrapInSquareBrackets(component)));
+                Component message = Component.translatable("screen.debug.menuType", ComponentUtils.wrapInSquareBrackets(component));
+                minecraft.gui.getChat().addMessage(message);
             }
         }
         return EventResult.PASS;

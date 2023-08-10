@@ -11,7 +11,8 @@ public class ModLanguageProvider extends AbstractLanguageProvider {
 
     @Override
     protected void addTranslations() {
-        this.add("debug.menu.opening", "Menu Type: %s");
+        this.add("screen.debug.identifier", "Screen Identifier: %s");
+        this.add("screen.debug.menuType", "Menu Type: %s");
         this.add("screen.daytime_switcher.algorithm.linear", "Linear");
         this.add("screen.daytime_switcher.algorithm.grayscale_and_linear", "Grayscale And Linear");
         this.add("screen.daytime_switcher.algorithm.hsp", "HSP");

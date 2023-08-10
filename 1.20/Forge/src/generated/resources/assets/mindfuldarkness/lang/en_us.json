@@ -1,5 +1,4 @@
 {
-  "debug.menu.opening": "Menu Type: %s",
   "screen.daytime_switcher.algorithm": "Algorithm",
   "screen.daytime_switcher.algorithm.grayscale_and_hsl": "Grayscale And HSL",
   "screen.daytime_switcher.algorithm.grayscale_and_hsp": "Grayscale And HSP",
@@ -10,5 +9,7 @@
   "screen.daytime_switcher.algorithm.hsv": "HSV",
   "screen.daytime_switcher.algorithm.linear": "Linear",
   "screen.daytime_switcher.front_brightness": "Font Brightness",
-  "screen.daytime_switcher.interface_darkness": "Interface Darkness"
+  "screen.daytime_switcher.interface_darkness": "Interface Darkness",
+  "screen.debug.identifier": "Screen Identifier: %s",
+  "screen.debug.menuType": "Menu Type: %s"
 }
