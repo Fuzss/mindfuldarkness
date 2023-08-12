@@ -1,11 +1,13 @@
 package fuzs.mindfuldarkness.client.gui.components;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.mindfuldarkness.client.handler.DaytimeSwitcherHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
@@ -16,18 +18,24 @@ public abstract class NewTextureSliderButton extends AbstractSliderButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        guiGraphics.blit(DaytimeSwitcherHandler.TEXTURE_LOCATION, this.getX() + 2, this.getY() + 2, 101, 226, (this.width - 4) / 2, this.height - 4);
-        guiGraphics.blit(DaytimeSwitcherHandler.TEXTURE_LOCATION, this.getX() + this.width / 2, this.getY() + 2, 101 + 146 - (this.width - 4) / 2, 226, (this.width - 4) / 2, this.height - 4);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, DaytimeSwitcherHandler.TEXTURE_LOCATION);
+        GuiComponent.blit(poseStack, this.x + 2, this.y + 2, 101, 226, (this.width - 4) / 2, this.height - 4, 256, 256);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, DaytimeSwitcherHandler.TEXTURE_LOCATION);
+        GuiComponent.blit(poseStack, this.x + this.width / 2, this.y + 2, 101 + 146 - (this.width - 4) / 2, 226, (this.width - 4) / 2, this.height - 4, 256, 256);
         int l = (this.isHoveredOrFocused() ? 2 : 1) * 18;
-        guiGraphics.blit(DaytimeSwitcherHandler.TEXTURE_LOCATION, this.getX() + (int)(this.value * (double)(this.width - 18)), this.getY(), 176, 57 + l, 18, 18);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, DaytimeSwitcherHandler.TEXTURE_LOCATION);
+        GuiComponent.blit(poseStack, this.x + (int)(this.value * (double)(this.width - 18)), this.y, 176, 57 + l, 18, 18, 256, 256);
         int j = this.active && this.isHoveredOrFocused() ? ChatFormatting.YELLOW.getColor() : 4210752;
-        guiGraphics.drawCenteredString(minecraft.font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
+        drawCenteredString(poseStack, minecraft.font, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
     }
 
     @Override
@@ -47,7 +55,7 @@ public abstract class NewTextureSliderButton extends AbstractSliderButton {
     }
 
     private void setValueFromMouse(double mouseX) {
-        this.setValue((mouseX - (double)(this.getX() + 9)) / (double)(this.width - 18));
+        this.setValue((mouseX - (double)(this.x + 9)) / (double)(this.width - 18));
     }
 
     private void setValue(double value) {
