@@ -27,7 +27,7 @@ public class ClientConfig implements ConfigCore {
     public ForgeConfigSpec.DoubleValue fontBrightness;
     public ForgeConfigSpec.EnumValue<PixelDarkener> darkeningAlgorithm;
     @Config(name = "paths", description = {"Specifies gui paths and resources to darken.", "End a path using '*' as a wildcard char to include every file (no nested directories) from that directory.", "Begin with a namespace or skip namespace to apply to all namespaces.", "Begin with '!' to exclude matches, list those exclusions after entries that would otherwise include them."})
-    List<String> pathsRaw = Lists.newArrayList("textures/gui/*", "!minecraft:textures/gui/icons.png", "!minecraft:textures/gui/options_background.png", "textures/gui/container/*", "minecraft:textures/gui/container/creative_inventory/*", "trinkets:textures/gui/slots/*", "craftingtweaks:gui.png", "dankstorage:textures/container/gui/*", "ae2:textures/guis/*", "!modmenu:textures/gui/mod_configuration.png");
+    List<String> pathsRaw = Lists.newArrayList("textures/gui/*", "!minecraft:textures/gui/icons.png", "!minecraft:textures/gui/options_background.png", "textures/gui/container/*", "minecraft:textures/gui/container/creative_inventory/*", "trinkets:textures/gui/slots/*", "craftingtweaks:gui.png", "dankstorage:textures/container/gui/*", "ae2:textures/guis/*", "!modmenu:textures/gui/mod_configuration.png", "!dynamiccrosshair:textures/gui/crosshairs.png");
     @Config(description = "Do not add the dark mode toggle buttons to the top of every menu.")
     public boolean hideInGameSwitcher = false;
     @Config(name = "menu_blacklist", description = "Exclude certain menus from showing the dark mode switcher. Useful when the box intersects other screen elements.")
