@@ -1,0 +1,15 @@
+{
+  "screen.daytime_switcher.algorithm": "Алгоритм (см. справку в Интернете)",
+  "screen.daytime_switcher.algorithm.grayscale_and_hsl": "Оттенки серого и HSL",
+  "screen.daytime_switcher.algorithm.grayscale_and_hsp": "Оттенки серого и HSP",
+  "screen.daytime_switcher.algorithm.grayscale_and_hsv": "Оттенки серого и HSV",
+  "screen.daytime_switcher.algorithm.grayscale_and_linear": "Оттенки серого и линейный",
+  "screen.daytime_switcher.algorithm.hsl": "HSL",
+  "screen.daytime_switcher.algorithm.hsp": "HSP",
+  "screen.daytime_switcher.algorithm.hsv": "HSV",
+  "screen.daytime_switcher.algorithm.linear": "Линейный",
+  "screen.daytime_switcher.front_brightness": "Яркость шрифта",
+  "screen.daytime_switcher.interface_darkness": "Темнота интерфейса",
+  "screen.debug.identifier": "Идентификатор экрана: %s",
+  "screen.debug.menuType": "Тип меню: %s"
+}
