@@ -1,37 +1,46 @@
 package fuzs.mindfuldarkness.client.handler;
 
 import fuzs.mindfuldarkness.MindfulDarkness;
-import fuzs.mindfuldarkness.client.gui.components.IconButton;
+import fuzs.mindfuldarkness.client.gui.components.SpritelessImageButton;
 import fuzs.mindfuldarkness.config.ClientConfig;
-import fuzs.puzzleslib.api.client.screen.v2.ScreenElementPositioner;
+import fuzs.mindfuldarkness.config.DaytimeButtonScreens;
+import fuzs.puzzleslib.api.client.event.v1.gui.ScreenEvents;
+import fuzs.puzzleslib.api.client.gui.v2.components.ScreenElementPositioner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class DaytimeMenuHandler {
 
-    public static void onAfterInit(Minecraft minecraft, Screen screen, int screenWidth, int screenHeight, List<AbstractWidget> widgets, Consumer<AbstractWidget> addWidget, Consumer<AbstractWidget> removeWidget) {
-        ClientConfig.DaytimeButtonScreens darkModeToggleScreens = MindfulDarkness.CONFIG.get(ClientConfig.class).darkModeToggleScreens;
+    public static void onAfterInit(Minecraft minecraft, Screen screen, int screenWidth, int screenHeight, List<AbstractWidget> widgets, ScreenEvents.ConsumingOperator<AbstractWidget> addWidget, ScreenEvents.ConsumingOperator<AbstractWidget> removeWidget) {
+        DaytimeButtonScreens darkModeToggleScreens = MindfulDarkness.CONFIG.get(ClientConfig.class).darkModeToggleScreens;
         if (darkModeToggleScreens.filter.test(screen)) {
-            IconButton iconButton = new IconButton(0, 0, 20, 20, 194, 57, 20, DaytimeSwitcherHandler.TEXTURE_LOCATION, 256, 256, button -> {
-                DaytimeSwitcherHandler.activateDaytimeSwitch();
-                applyTextureOffsets((IconButton) button);
-            });
+            SpritelessImageButton iconButton = new SpritelessImageButton(0,
+                    0,
+                    20,
+                    20,
+                    194,
+                    57,
+                    DaytimeSwitcherHandler.TEXTURE_LOCATION,
+                    button -> {
+                        DaytimeSwitcherHandler.activateDaytimeSwitch();
+                        applyTextureOffsets((SpritelessImageButton) button);
+                    }
+            ).setDrawBackground();
             if (ScreenElementPositioner.tryPositionElement(iconButton, widgets, darkModeToggleScreens.buttonKeys)) {
-                addWidget.accept(iconButton);
+                addWidget.apply(iconButton);
                 applyTextureOffsets(iconButton);
             }
         }
     }
 
-    private static void applyTextureOffsets(IconButton iconButton) {
+    private static void applyTextureOffsets(SpritelessImageButton iconButton) {
         if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
-            iconButton.setTexture(194, 57);
+            iconButton.setTextureCoordinates(194, 57);
         } else {
-            iconButton.setTexture(214, 57);
+            iconButton.setTextureCoordinates(214, 57);
         }
     }
 }

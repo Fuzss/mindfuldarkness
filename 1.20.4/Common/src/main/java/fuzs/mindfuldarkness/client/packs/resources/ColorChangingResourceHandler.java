@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.NativeImage;
 import fuzs.mindfuldarkness.MindfulDarkness;
 import fuzs.mindfuldarkness.client.handler.ColorChangedAssetsManager;
-import fuzs.mindfuldarkness.client.util.PixelDarkener;
+import fuzs.mindfuldarkness.client.util.DarkeningAlgorithm;
 import fuzs.mindfuldarkness.client.util.RGBBrightnessUtil;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import net.minecraft.resources.ResourceLocation;
@@ -47,7 +47,7 @@ public class ColorChangingResourceHandler {
             ColorChangedAssetsManager.INSTANCE.add(location);
             if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
                 double textureDarkness = MindfulDarkness.CONFIG.get(ClientConfig.class).textureDarkness.get();
-                PixelDarkener algorithm = MindfulDarkness.CONFIG.get(ClientConfig.class).darkeningAlgorithm.get();
+                DarkeningAlgorithm algorithm = MindfulDarkness.CONFIG.get(ClientConfig.class).darkeningAlgorithm.get();
                 ByteArrayInputStream inputStream = adjustImage(resource.get(), textureDarkness, algorithm);
                 Resource newResource = new ForwardingResource(resource.get(), () -> inputStream);
                 return Optional.of(newResource);
@@ -56,7 +56,7 @@ public class ColorChangingResourceHandler {
         return Optional.empty();
     }
 
-    private static ByteArrayInputStream adjustImage(Resource resource, double textureDarkness, PixelDarkener algorithm) {
+    private static ByteArrayInputStream adjustImage(Resource resource, double textureDarkness, DarkeningAlgorithm algorithm) {
         try (InputStream open = resource.open(); NativeImage image = NativeImage.read(open)) {
             for (int x = 0; x < image.getWidth(); x++) {
                 for (int y = 0; y < image.getHeight(); y++) {

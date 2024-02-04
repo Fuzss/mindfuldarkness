@@ -1,11 +1,10 @@
 package fuzs.mindfuldarkness.client.util;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.util.Mth;
 
+import static fuzs.mindfuldarkness.client.util.CompactConversionsUtil.*;
 import static fuzs.mindfuldarkness.client.util.HSPConversionUtil.HSPtoRGB;
 import static fuzs.mindfuldarkness.client.util.HSPConversionUtil.RGBtoHSP;
-import static fuzs.mindfuldarkness.client.util.CompactConversionsUtil.*;
 
 /**
  * Adapted from <a href="https://stackoverflow.com/questions/141855/programmatically-lighten-a-color">Programmatically Lighten a Color</a>.

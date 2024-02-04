@@ -20,18 +20,18 @@ public class NewTextureButton extends Button {
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
         Minecraft minecraft = Minecraft.getInstance();
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+        guiGraphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
-        guiGraphics.blitNineSliced(DaytimeSwitcherHandler.TEXTURE_LOCATION, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, this.getTextureY());
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        int k = this.active && this.isHoveredOrFocused() ? ChatFormatting.YELLOW.getColor() : 4210752;
-        drawCenteredString(guiGraphics, minecraft.font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, k | Mth.ceil(this.alpha * 255.0F) << 24, false);
+        GuiGraphicsHelper.blitNineSliced(guiGraphics, DaytimeSwitcherHandler.TEXTURE_LOCATION, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, this.getTextureY());
+        guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        int fontColor = this.active && this.isHoveredOrFocused() ? ChatFormatting.YELLOW.getColor() : 0x404040;
+        this.renderString(guiGraphics, minecraft.font, fontColor | Mth.ceil(this.alpha * 255.0F) << 24);
     }
 
     private int getTextureY() {
-        int i = !this.active || this.isHoveredOrFocused() ? 2 : 1;
-        return 166 + i * 20;
+        int offset = !this.active || this.isHoveredOrFocused() ? 2 : 1;
+        return 166 + offset * 20;
     }
 
     public static void drawCenteredString(GuiGraphics guiGraphics, Font font, Component text, int x, int y, int color, boolean dropShadow) {
