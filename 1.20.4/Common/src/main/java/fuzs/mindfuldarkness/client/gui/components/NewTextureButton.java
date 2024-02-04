@@ -26,7 +26,7 @@ public class NewTextureButton extends Button {
         GuiGraphicsHelper.blitNineSliced(guiGraphics, DaytimeSwitcherHandler.TEXTURE_LOCATION, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, this.getTextureY());
         guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         int fontColor = this.active && this.isHoveredOrFocused() ? ChatFormatting.YELLOW.getColor() : 0x404040;
-        this.renderString(guiGraphics, minecraft.font, fontColor | Mth.ceil(this.alpha * 255.0F) << 24);
+        drawCenteredString(guiGraphics, minecraft.font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, fontColor | Mth.ceil(this.alpha * 255.0F) << 24, false);
     }
 
     private int getTextureY() {

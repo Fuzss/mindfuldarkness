@@ -26,8 +26,8 @@ public abstract class NewTextureSliderButton extends AbstractSliderButton {
         guiGraphics.blit(DaytimeSwitcherHandler.TEXTURE_LOCATION, this.getX() + this.width / 2, this.getY() + 2, 101 + 146 - (this.width - 4) / 2, 226, (this.width - 4) / 2, this.height - 4);
         int l = (this.isHoveredOrFocused() ? 2 : 1) * 18;
         guiGraphics.blit(DaytimeSwitcherHandler.TEXTURE_LOCATION, this.getX() + (int)(this.value * (double)(this.width - 18)), this.getY(), 176, 57 + l, 18, 18);
-        int j = this.active && this.isHoveredOrFocused() ? ChatFormatting.YELLOW.getColor() : 4210752;
-        guiGraphics.drawCenteredString(minecraft.font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
+        int fontColor = this.active && this.isHoveredOrFocused() ? ChatFormatting.YELLOW.getColor() : 4210752;
+        guiGraphics.drawCenteredString(minecraft.font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, fontColor | Mth.ceil(this.alpha * 255.0F) << 24);
     }
 
     @Override

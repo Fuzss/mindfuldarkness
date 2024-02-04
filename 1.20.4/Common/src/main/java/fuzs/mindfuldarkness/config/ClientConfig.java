@@ -43,7 +43,10 @@ public class ClientConfig implements ConfigCore {
             "dankstorage:textures/container/gui/*",
             "ae2:textures/guis/*",
             "!modmenu:textures/gui/mod_configuration.png",
-            "!dynamiccrosshair:textures/gui/crosshairs.png"
+            "!dynamiccrosshair:textures/gui/crosshairs.png",
+            "quark:textures/misc/backpack_gui.png",
+            "quark:textures/misc/matrix_enchanting.png",
+            "quark:textures/misc/shulker_widget.png"
     );
     @Config(name = "menu_blacklist",
             description = "Exclude certain menus from showing the dark mode switcher. Useful when the box intersects other screen elements."

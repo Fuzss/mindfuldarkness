@@ -22,24 +22,54 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class ClientConfig implements ConfigCore {
-    public ForgeConfigSpec.BooleanValue darkTheme;
-    public ForgeConfigSpec.DoubleValue textureDarkness;
-    public ForgeConfigSpec.DoubleValue fontBrightness;
-    public ForgeConfigSpec.EnumValue<PixelDarkener> darkeningAlgorithm;
-    @Config(name = "paths", description = {"Specifies gui paths and resources to darken.", "End a path using '*' as a wildcard char to include every file (no nested directories) from that directory.", "Begin with a namespace or skip namespace to apply to all namespaces.", "Begin with '!' to exclude matches, list those exclusions after entries that would otherwise include them."})
-    List<String> pathsRaw = Lists.newArrayList("textures/gui/*", "!minecraft:textures/gui/icons.png", "!minecraft:textures/gui/options_background.png", "textures/gui/container/*", "minecraft:textures/gui/container/creative_inventory/*", "trinkets:textures/gui/slots/*", "craftingtweaks:gui.png", "dankstorage:textures/container/gui/*", "ae2:textures/guis/*", "!modmenu:textures/gui/mod_configuration.png", "!dynamiccrosshair:textures/gui/crosshairs.png");
     @Config(description = "Do not add the dark mode toggle buttons to the top of every menu.")
     public boolean hideInGameSwitcher = false;
-    @Config(name = "menu_blacklist", description = "Exclude certain menus from showing the dark mode switcher. Useful when the box intersects other screen elements.")
-    List<String> menuBlacklistRaw = Lists.newArrayList();
     @Config(description = "Print menu type to game chat whenever a new menu screen is opened. Intended for finding menu types to be added to \"menu_blacklist\".")
     public boolean debugContainerTypes = false;
-    @Config(name = "font_color_blacklist", description = "Exclude certain screens from being affected by any text color alterations.")
-    List<String> fontColorBlacklistRaw = Lists.newArrayList("chat_screen.title", "sign.edit", "hanging_sign.edit");
     @Config(description = "Print screen identifier to game chat or log file whenever a new screen is opened. Intended for finding screens to be added to \"font_color_blacklist\".")
     public boolean debugAllScreens = false;
     @Config(description = "Screens to add a dark mode toggle button to, so that toggling is possible outside of inventory menus.")
     public DaytimeButtonScreens darkModeToggleScreens = DaytimeButtonScreens.BOTH;
+    @Config(name = "paths",
+            description = {"Specifies gui paths and resources to darken.",
+                    "End a path using '*' as a wildcard char to include every file (no nested directories) from that directory.",
+                    "Begin with a namespace or skip namespace to apply to all namespaces.",
+                    "Begin with '!' to exclude matches, list those exclusions after entries that would otherwise include them."}
+    )
+    List<String> pathsRaw = Lists.newArrayList("textures/gui/*",
+            "!minecraft:textures/gui/icons.png",
+            "!minecraft:textures/gui/options_background.png",
+            "!minecraft:textures/gui/book.png",
+            "textures/gui/container/*",
+            "minecraft:textures/gui/container/creative_inventory/*",
+            "trinkets:textures/gui/slots/*",
+            "craftingtweaks:gui.png",
+            "dankstorage:textures/container/gui/*",
+            "ae2:textures/guis/*",
+            "!modmenu:textures/gui/mod_configuration.png",
+            "!dynamiccrosshair:textures/gui/crosshairs.png",
+            "quark:textures/misc/backpack_gui.png",
+            "quark:textures/misc/matrix_enchanting.png",
+            "quark:textures/misc/shulker_widget.png"
+    );
+    @Config(name = "menu_blacklist",
+            description = "Exclude certain menus from showing the dark mode switcher. Useful when the box intersects other screen elements."
+    )
+    List<String> menuBlacklistRaw = Lists.newArrayList();
+    @Config(name = "font_color_blacklist",
+            description = "Exclude certain screens from being affected by any text color alterations."
+    )
+    List<String> fontColorBlacklistRaw = Lists.newArrayList("chat_screen.title",
+            "sign.edit",
+            "hanging_sign.edit",
+            "book.edit",
+            "book.view"
+    );
+
+    public ForgeConfigSpec.BooleanValue darkTheme;
+    public ForgeConfigSpec.DoubleValue textureDarkness;
+    public ForgeConfigSpec.DoubleValue fontBrightness;
+    public ForgeConfigSpec.EnumValue<PixelDarkener> darkeningAlgorithm;
 
     public List<String> paths;
     public ConfigDataSet<MenuType<?>> menuBlacklist;

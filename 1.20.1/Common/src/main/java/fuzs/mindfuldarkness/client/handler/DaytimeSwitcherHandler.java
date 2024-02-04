@@ -3,7 +3,6 @@ package fuzs.mindfuldarkness.client.handler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fuzs.mindfuldarkness.MindfulDarkness;
 import fuzs.mindfuldarkness.client.gui.screens.PixelConfigScreen;
-import fuzs.mindfuldarkness.client.util.ScreenIdentifierHelper;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import fuzs.mindfuldarkness.mixin.client.accessor.AbstractContainerMenuAccessor;
 import fuzs.puzzleslib.api.client.screen.v2.ScreenHelper;
@@ -57,7 +56,7 @@ public class DaytimeSwitcherHandler {
         if (screen == null) buttons = null;
         Minecraft minecraft = Minecraft.getInstance();
         if (screen != null && MindfulDarkness.CONFIG.get(ClientConfig.class).debugAllScreens) {
-            String identifier = ScreenIdentifierHelper.getScreenIdentifier(screen);
+            String identifier = FontColorHandler.identifyScreen(screen);
             if (identifier != null) {
                 Component message = Component.translatable("screen.debug.identifier", ComponentUtils.wrapInSquareBrackets(Component.literal(identifier)));
                 // we don't need both as chat messages are logged automatically

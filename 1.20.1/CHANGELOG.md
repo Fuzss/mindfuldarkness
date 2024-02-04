@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog].
 
+## [v8.0.3-1.20.1] - 2024-02-04
+### Changed
+- Add default configurations for Quark menus
+### Fixed
+- Fix text on in-world signs changing color
+- Fix xp level color changing when a screen is open
+
 ## [v8.0.2-1.20.1] - 2023-08-17
 ### Changed
 - Added a default exclusion for the [Dynamic Crosshair](https://www.curseforge.com/minecraft/mc-mods/dynamic-crosshair) mod
