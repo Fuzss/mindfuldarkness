@@ -8,7 +8,8 @@
   "client": [
     "client.FontMixin",
     "client.MultiPackResourceManagerMixin",
-    "client.ScreenMixin"
+    "client.ScreenMixin",
+    "client.SpriteContentsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

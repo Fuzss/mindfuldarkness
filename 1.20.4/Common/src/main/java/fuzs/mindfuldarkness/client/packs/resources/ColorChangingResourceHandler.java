@@ -58,18 +58,36 @@ public class ColorChangingResourceHandler {
 
     private static ByteArrayInputStream adjustImage(Resource resource, double textureDarkness, DarkeningAlgorithm algorithm) {
         try (InputStream open = resource.open(); NativeImage image = NativeImage.read(open)) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                for (int y = 0; y < image.getHeight(); y++) {
-                    int pixel = image.getPixelRGBA(x, y);
-                    int alpha = RGBBrightnessUtil.getA(pixel);
-                    if (alpha != 0) {
-                        image.setPixelRGBA(x, y, algorithm.processPixel(pixel, textureDarkness) | alpha << 24);
-                    }
-                }
-            }
+            processImage(image, textureDarkness, algorithm);
             return new ByteArrayInputStream(image.asByteArray());
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void processResource(ResourceLocation location, NativeImage nativeImage) {
+        if (location.toString().contains("hotbar_selection")) {
+            System.out.println();
+        }
+        if (location.toString().contains("widget/") || location.toString().contains("hud/") || this.matchesPath(location)) {
+            ColorChangedAssetsManager.INSTANCE.add(location);
+            if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
+                double textureDarkness = MindfulDarkness.CONFIG.get(ClientConfig.class).textureDarkness.get();
+                DarkeningAlgorithm algorithm = MindfulDarkness.CONFIG.get(ClientConfig.class).darkeningAlgorithm.get();
+                processImage(nativeImage, textureDarkness, algorithm);
+            }
+        }
+    }
+
+    public static void processImage(NativeImage nativeImage, double textureDarkness, DarkeningAlgorithm algorithm) {
+        for (int x = 0; x < nativeImage.getWidth(); x++) {
+            for (int y = 0; y < nativeImage.getHeight(); y++) {
+                int pixel = nativeImage.getPixelRGBA(x, y);
+                int alpha = RGBBrightnessUtil.getA(pixel);
+                if (alpha != 0) {
+                    nativeImage.setPixelRGBA(x, y, algorithm.processPixel(pixel, textureDarkness) | alpha << 24);
+                }
+            }
         }
     }
 

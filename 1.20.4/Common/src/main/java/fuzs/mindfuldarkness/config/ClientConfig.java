@@ -33,7 +33,8 @@ public class ClientConfig implements ConfigCore {
                     "Begin with '!' to exclude matches, list those exclusions after entries that would otherwise include them."}
     )
     List<String> pathsRaw = Lists.newArrayList("textures/gui/*",
-            "minecraft:textures/atlas/gui.png",
+            "textures/gui/sprites/hud/*",
+            "textures/gui/sprites/widget/*",
             "!minecraft:textures/gui/options_background.png",
             "!minecraft:textures/gui/book.png",
             "textures/gui/container/*",
