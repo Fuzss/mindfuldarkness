@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -64,8 +65,11 @@ public class FontColorHandler {
         double targetBrightness = MindfulDarkness.CONFIG.get(ClientConfig.class).fontBrightness.get();
         if (hspColorArray[2] < targetBrightness) {
             double[] rgbColorArray = HSPConversionUtil.HSPtoRGB(hspColorArray[0], hspColorArray[1], targetBrightness);
-            return OptionalInt.of(RGBBrightnessUtil.packRGBColor(rgbColorArray));
+            int alpha = ARGB.alpha(color);
+            color = RGBBrightnessUtil.packRGBColor(rgbColorArray);
+            return OptionalInt.of(ARGB.color(alpha, color));
+        } else {
+            return OptionalInt.empty();
         }
-        return OptionalInt.empty();
     }
 }

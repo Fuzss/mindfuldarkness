@@ -1,20 +1,21 @@
 package fuzs.mindfuldarkness.client.handler;
 
 import fuzs.mindfuldarkness.MindfulDarkness;
-import fuzs.mindfuldarkness.client.gui.components.SpritelessImageButton;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import fuzs.mindfuldarkness.config.DaytimeButtonScreens;
-import fuzs.puzzleslib.api.client.event.v1.gui.ScreenEvents;
 import fuzs.puzzleslib.api.client.gui.v2.components.ScreenElementPositioner;
+import fuzs.puzzleslib.api.client.gui.v2.components.SpritelessImageButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 public class DaytimeMenuHandler {
 
-    public static void onAfterInit(Minecraft minecraft, Screen screen, int screenWidth, int screenHeight, List<AbstractWidget> widgets, ScreenEvents.ConsumingOperator<AbstractWidget> addWidget, ScreenEvents.ConsumingOperator<AbstractWidget> removeWidget) {
+    public static void onAfterInit(Minecraft minecraft, Screen screen, int screenWidth, int screenHeight, List<AbstractWidget> widgets, UnaryOperator<AbstractWidget> addWidget, Consumer<AbstractWidget> removeWidget) {
         DaytimeButtonScreens darkModeToggleScreens = MindfulDarkness.CONFIG.get(ClientConfig.class).darkModeToggleScreens;
         if (darkModeToggleScreens.filter.test(screen)) {
             SpritelessImageButton iconButton = new SpritelessImageButton(0,
@@ -27,8 +28,7 @@ public class DaytimeMenuHandler {
                     button -> {
                         DaytimeSwitcherHandler.activateDaytimeSwitch();
                         applyTextureOffsets((SpritelessImageButton) button);
-                    }
-            ).setDrawBackground();
+                    }).setDrawBackground();
             if (ScreenElementPositioner.tryPositionElement(iconButton, widgets, darkModeToggleScreens.buttonKeys)) {
                 addWidget.apply(iconButton);
                 applyTextureOffsets(iconButton);

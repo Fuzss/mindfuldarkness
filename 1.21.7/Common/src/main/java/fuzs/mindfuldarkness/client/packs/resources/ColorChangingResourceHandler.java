@@ -7,6 +7,7 @@ import fuzs.mindfuldarkness.client.handler.ColorChangedAssetsManager;
 import fuzs.mindfuldarkness.client.util.DarkeningAlgorithm;
 import fuzs.mindfuldarkness.client.util.RGBBrightnessUtil;
 import fuzs.mindfuldarkness.config.ClientConfig;
+import fuzs.puzzleslib.api.client.packs.v1.NativeImageHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import org.apache.commons.lang3.StringUtils;
@@ -59,7 +60,7 @@ public class ColorChangingResourceHandler {
     private static ByteArrayInputStream adjustImage(Resource resource, double textureDarkness, DarkeningAlgorithm algorithm) {
         try (InputStream open = resource.open(); NativeImage image = NativeImage.read(open)) {
             processImage(image, textureDarkness, algorithm);
-            return new ByteArrayInputStream(image.asByteArray());
+            return new ByteArrayInputStream(NativeImageHelper.asByteArray(image));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -82,10 +83,10 @@ public class ColorChangingResourceHandler {
     public static void processImage(NativeImage nativeImage, double textureDarkness, DarkeningAlgorithm algorithm) {
         for (int x = 0; x < nativeImage.getWidth(); x++) {
             for (int y = 0; y < nativeImage.getHeight(); y++) {
-                int pixel = nativeImage.getPixelRGBA(x, y);
+                int pixel = nativeImage.getPixel(x, y);
                 int alpha = RGBBrightnessUtil.getA(pixel);
                 if (alpha != 0) {
-                    nativeImage.setPixelRGBA(x, y, algorithm.processPixel(pixel, textureDarkness) | alpha << 24);
+                    nativeImage.setPixel(x, y, algorithm.processPixel(pixel, textureDarkness) | alpha << 24);
                 }
             }
         }

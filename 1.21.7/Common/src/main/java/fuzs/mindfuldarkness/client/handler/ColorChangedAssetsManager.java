@@ -1,7 +1,6 @@
 package fuzs.mindfuldarkness.client.handler;
 
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -20,7 +19,7 @@ public class ColorChangedAssetsManager {
     }
 
     @SuppressWarnings("ConstantValue")
-    private void reset() {
+    public void reset() {
         TextureManager textureManager = Minecraft.getInstance().getTextureManager();
         if (textureManager != null) {
             for (ResourceLocation path : this.colorChangingTextures) {
@@ -33,14 +32,6 @@ public class ColorChangedAssetsManager {
                 }
             }
             this.colorChangingTextures.clear();
-        }
-    }
-
-    public void recordedReset() {
-        if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(this::reset);
-        } else {
-            this.reset();
         }
     }
 }

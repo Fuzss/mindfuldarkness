@@ -6,9 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "client.FontMixin",
+    "client.Font\u0024PreparedTextBuilderMixin",
     "client.MultiPackResourceManagerMixin",
-    "client.ScreenMixin",
     "client.SpriteContentsMixin"
   ],
   "injectors": {

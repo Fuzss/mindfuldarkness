@@ -10,6 +10,7 @@ import fuzs.puzzleslib.api.config.v3.Config;
 import fuzs.puzzleslib.api.config.v3.ConfigCore;
 import fuzs.puzzleslib.api.config.v3.ValueCallback;
 import fuzs.puzzleslib.api.config.v3.serialization.ConfigDataSet;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -91,7 +92,9 @@ public class ClientConfig implements ConfigCore {
         }).toList();
         this.menuBlacklist = ConfigDataSet.from(Registries.MENU, this.menuBlacklistRaw);
         this.fontColorBlacklist = ImmutableSet.copyOf(this.fontColorBlacklistRaw);
-        ColorChangedAssetsManager.INSTANCE.recordedReset();
-        ColorChangingResourceHandler.INSTANCE.clear();
+        if (Minecraft.getInstance() != null) {
+            ColorChangedAssetsManager.INSTANCE.reset();
+            ColorChangingResourceHandler.INSTANCE.clear();
+        }
     }
 }

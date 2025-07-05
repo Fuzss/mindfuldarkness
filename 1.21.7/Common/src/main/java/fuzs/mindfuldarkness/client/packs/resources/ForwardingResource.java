@@ -1,6 +1,7 @@
 package fuzs.mindfuldarkness.client.packs.resources;
 
 import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceMetadata;
@@ -8,6 +9,7 @@ import net.minecraft.server.packs.resources.ResourceMetadata;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 public class ForwardingResource extends Resource {
     private final Resource resource;
@@ -28,8 +30,8 @@ public class ForwardingResource extends Resource {
     }
 
     @Override
-    public boolean isBuiltin() {
-        return this.resource.isBuiltin();
+    public Optional<KnownPack> knownPackInfo() {
+        return this.resource.knownPackInfo();
     }
 
     @Override
