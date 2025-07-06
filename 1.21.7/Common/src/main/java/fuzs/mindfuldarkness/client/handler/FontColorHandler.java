@@ -6,8 +6,6 @@ import fuzs.mindfuldarkness.client.util.RGBBrightnessUtil;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.BookEditScreen;
-import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -21,25 +19,21 @@ public class FontColorHandler {
     private static boolean renderInDarkness;
 
     public static void onBeforeRender(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
-        String identifier = identifyScreen(screen);
-        if (identifier == null ||
-                !MindfulDarkness.CONFIG.get(ClientConfig.class).fontColorBlacklist.contains(identifier)) {
+        String identifier = getScreenIdentifier(screen);
+        if (identifier == null
+                || !MindfulDarkness.CONFIG.get(ClientConfig.class).fontColorBlacklist.contains(identifier)) {
             renderInDarkness = true;
         }
     }
 
     @Nullable
-    public static String identifyScreen(Screen screen) {
+    public static String getScreenIdentifier(Screen screen) {
         Objects.requireNonNull(screen, "screen is null");
         Component title = screen.getTitle();
-        if (title.getContents() instanceof PlainTextContents.LiteralContents literalContents) {
-            return literalContents.text();
+        if (title.getContents() instanceof PlainTextContents.LiteralContents(String text)) {
+            return text;
         } else if (title.getContents() instanceof TranslatableContents translatableContents) {
             return translatableContents.getKey();
-        } else if (screen instanceof BookEditScreen) {
-            return "book.edit";
-        } else if (screen instanceof BookViewScreen) {
-            return "book.view";
         } else {
             return null;
         }
@@ -51,8 +45,8 @@ public class FontColorHandler {
 
     public static int adjustFontColor(int fontColor) {
         if (renderInDarkness) {
-            if (MindfulDarkness.CONFIG.getHolder(ClientConfig.class).isAvailable() &&
-                    MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
+            if (MindfulDarkness.CONFIG.getHolder(ClientConfig.class).isAvailable() && MindfulDarkness.CONFIG.get(
+                    ClientConfig.class).darkTheme.get()) {
                 return tryAdjustColor(fontColor).orElse(fontColor);
             }
         }

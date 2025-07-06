@@ -9,12 +9,12 @@ import fuzs.mindfuldarkness.client.util.DarkeningAlgorithm;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class PixelConfigScreen extends Screen {
     public static final Component ALGORITHM_COMPONENT = Component.translatable("screen.daytime_switcher.algorithm");
@@ -28,6 +28,7 @@ public class PixelConfigScreen extends Screen {
     protected int imageHeight = 166;
     protected int leftPos;
     protected int topPos;
+    private boolean markedDirty;
 
     public PixelConfigScreen(Screen lastScreen) {
         super(CommonComponents.EMPTY);
@@ -53,16 +54,16 @@ public class PixelConfigScreen extends Screen {
                 150,
                 20,
                 clientConfig.darkeningAlgorithm.get().getComponent(),
-                button -> {
-                    ModConfigSpec.EnumValue<DarkeningAlgorithm> configValue = clientConfig.darkeningAlgorithm;
+                (Button button) -> {
                     int length = DarkeningAlgorithm.values().length;
                     DarkeningAlgorithm darkeningAlgorithm = DarkeningAlgorithm.values()[
-                            ((configValue.get().ordinal() + (hasShiftDown() ? -1 : 1)) % length + length) % length];
-                    configValue.set(darkeningAlgorithm);
-                    configValue.save();
+                            ((clientConfig.darkeningAlgorithm.get().ordinal() + (hasShiftDown() ? -1 : 1)) % length
+                                    + length) % length];
+                    clientConfig.darkeningAlgorithm.set(darkeningAlgorithm);
                     button.setMessage(darkeningAlgorithm.getComponent());
                     if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
                         ColorChangedAssetsManager.INSTANCE.reset();
+                        this.markedDirty = true;
                     }
                 }));
         this.addRenderableWidget(new NewTextureSliderButton(this.leftPos + 13,
@@ -80,9 +81,9 @@ public class PixelConfigScreen extends Screen {
                     @Override
                     protected void applyValue() {
                         clientConfig.textureDarkness.set(this.value);
-                        clientConfig.textureDarkness.save();
                         if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
                             ColorChangedAssetsManager.INSTANCE.reset();
+                            PixelConfigScreen.this.markedDirty = true;
                         }
                     }
                 })
@@ -103,7 +104,7 @@ public class PixelConfigScreen extends Screen {
                     @Override
                     protected void applyValue() {
                         clientConfig.fontBrightness.set(this.value);
-                        clientConfig.fontBrightness.save();
+                        PixelConfigScreen.this.markedDirty = true;
                     }
                 })
                 .setTooltip(Tooltip.create(Component.literal(String.format("%.0f%%",
@@ -163,8 +164,9 @@ public class PixelConfigScreen extends Screen {
         } else if (this.minecraft.options.keyInventory.matches(keyCode, scanCode)) {
             this.onClose();
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -174,10 +176,21 @@ public class PixelConfigScreen extends Screen {
 
     @Override
     public void onClose() {
+        this.saveSettings();
         this.lastScreen.onClose();
     }
 
     public void closeToLastScreen() {
+        this.saveSettings();
         this.minecraft.setScreen(this.lastScreen);
+    }
+
+    private void saveSettings() {
+        if (this.markedDirty) {
+            ClientConfig clientConfig = MindfulDarkness.CONFIG.get(ClientConfig.class);
+            clientConfig.darkeningAlgorithm.save();
+            clientConfig.textureDarkness.save();
+            clientConfig.fontBrightness.save();
+        }
     }
 }

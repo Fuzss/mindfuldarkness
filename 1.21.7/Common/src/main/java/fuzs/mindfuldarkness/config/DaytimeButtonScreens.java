@@ -1,5 +1,6 @@
 package fuzs.mindfuldarkness.config;
 
+import com.google.common.base.Predicates;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -7,21 +8,22 @@ import net.minecraft.client.gui.screens.TitleScreen;
 import java.util.function.Predicate;
 
 public enum DaytimeButtonScreens {
-    NONE(screen -> false), TITLE_SCREEN(screen -> screen instanceof TitleScreen,
+    NONE(Predicates.alwaysFalse()),
+    TITLE_SCREEN((Screen screen) -> screen instanceof TitleScreen,
             "modmenu.title",
             "fml.menu.mods",
             "menu.online",
             "menu.multiplayer",
-            "menu.singleplayer"
-    ), PAUSE_SCREEN(screen -> screen instanceof PauseScreen,
+            "menu.singleplayer"),
+    PAUSE_SCREEN((Screen screen) -> screen instanceof PauseScreen,
             "modmenu.title",
             "fml.menu.mods",
             "menu.reportBugs",
             "menu.shareToLan",
             "menu.playerReporting",
             "menu.options",
-            "gui.stats"
-    ), BOTH(screen -> screen instanceof TitleScreen || screen instanceof PauseScreen,
+            "gui.stats"),
+    BOTH((Screen screen) -> screen instanceof TitleScreen || screen instanceof PauseScreen,
             "modmenu.title",
             "fml.menu.mods",
             "menu.online",
@@ -31,8 +33,7 @@ public enum DaytimeButtonScreens {
             "menu.shareToLan",
             "menu.playerReporting",
             "menu.options",
-            "gui.stats"
-    );
+            "gui.stats");
 
     public final Predicate<Screen> filter;
     public final String[] buttonKeys;

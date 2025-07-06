@@ -60,7 +60,7 @@ public class DaytimeSwitcherHandler {
             Minecraft minecraft = Minecraft.getInstance();
 
             if (MindfulDarkness.CONFIG.get(ClientConfig.class).debugAllScreens) {
-                String identifier = FontColorHandler.identifyScreen(newScreen);
+                String identifier = FontColorHandler.getScreenIdentifier(newScreen);
 
                 if (identifier != null) {
                     Component message = Component.translatable(KEY_DEBUG_IDENTIFIER,
@@ -191,6 +191,5 @@ public class DaytimeSwitcherHandler {
         ModConfigSpec.BooleanValue configValue = MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme;
         configValue.set(!configValue.get());
         configValue.save();
-        ColorChangedAssetsManager.INSTANCE.reset();
     }
 }

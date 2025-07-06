@@ -1,6 +1,5 @@
 package fuzs.mindfuldarkness.client.packs.resources;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.NativeImage;
 import fuzs.mindfuldarkness.MindfulDarkness;
 import fuzs.mindfuldarkness.client.handler.ColorChangedAssetsManager;
@@ -16,15 +15,12 @@ import org.jetbrains.annotations.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 public class ColorChangingResourceHandler {
-    public static final String VALID_RESOURCE_LOCATION_NAMESPACE = "[a-z0-9_.-]";
-    public static final String VALID_RESOURCE_LOCATION_PATH = "[a-z0-9/._-]";
+    public static final String VALID_RESOURCE_LOCATION_NAMESPACE = "[a-z0-9_.-]+";
+    public static final String VALID_RESOURCE_LOCATION_PATH = "[a-z0-9/._-]+";
     /**
      * Path may begin with '!' if it is an exclusion.
      * <p>Path can optionally begin with '<code>namespace</code>:'.
@@ -40,7 +36,7 @@ public class ColorChangingResourceHandler {
     private List<Function<String, Boolean>> validPaths;
 
     private ColorChangingResourceHandler() {
-
+        // NO-OP
     }
 
     public Optional<Resource> getResource(ResourceLocation location, Optional<Resource> resource) {
@@ -66,12 +62,9 @@ public class ColorChangingResourceHandler {
         }
     }
 
-    public void processResource(ResourceLocation location, NativeImage nativeImage) {
-        if (location.toString().contains("hotbar_selection")) {
-            System.out.println();
-        }
-        if (location.toString().contains("widget/") || location.toString().contains("hud/") || this.matchesPath(location)) {
-            ColorChangedAssetsManager.INSTANCE.add(location);
+    public void processResource(ResourceLocation resourceLocation, NativeImage nativeImage) {
+        if (this.matchesPath(resourceLocation)) {
+            ColorChangedAssetsManager.INSTANCE.add(resourceLocation);
             if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
                 double textureDarkness = MindfulDarkness.CONFIG.get(ClientConfig.class).textureDarkness.get();
                 DarkeningAlgorithm algorithm = MindfulDarkness.CONFIG.get(ClientConfig.class).darkeningAlgorithm.get();
@@ -124,7 +117,7 @@ public class ColorChangingResourceHandler {
         // Compiles a list of directories with resources we want to modify, child directories are replaced if the parent is included, too.
         // This is supposed to provide a relatively cheap check for a location if it's even interesting to us,
         // so usually just something starting with 'textures/gui'.
-        List<String> normalized = Lists.newArrayList();
+        List<String> normalized = new ArrayList<>();
         paths: for (String path : paths) {
             if (path.startsWith("!")) continue;
             // remove namespace, we do this 'optimization' globally
@@ -160,34 +153,45 @@ public class ColorChangingResourceHandler {
 
     private static List<Function<String, Boolean>> compileValidPaths(List<String> paths) {
         // This compiles the filter paths into proper regex and then into predicates which can return true, false (if inverse) or null (if not applicable).
-        List<Function<String, Boolean>> pathFilters = Lists.newArrayList();
+        List<Function<String, Boolean>> pathFilters = new ArrayList<>();
         for (String path : paths) {
             boolean inverse = path.startsWith("!");
             if (inverse) path = path.substring(1);
-            if (!path.contains(":")) path = VALID_RESOURCE_LOCATION_NAMESPACE + "+:" + path;
+            if (!path.contains(":")) path = VALID_RESOURCE_LOCATION_NAMESPACE + ":" + path;
             // wildcard is only valid for files, so use regex match without '/' which vanilla normally supports
-            path = path.replaceAll("\\*", VALID_RESOURCE_LOCATION_NAMESPACE + "+").replaceAll("\\.", "\\\\.");
+            if (path.endsWith("/")) {
+                path = path.concat(VALID_RESOURCE_LOCATION_NAMESPACE);
+            }
+            path = path.replaceAll("\\*", VALID_RESOURCE_LOCATION_PATH).replaceAll("\\.", "\\\\.");
             String filter = "^" + path + "$";
-            pathFilters.add(s -> s.matches(filter) ? !inverse : null);
+            pathFilters.add((String s) -> s.matches(filter) ? !inverse : null);
         }
         Collections.reverse(pathFilters);
         return pathFilters;
     }
 
     private static boolean matchesPath(List<String> domains, List<Function<String, Boolean>> filters, ResourceLocation resourceLocation) {
-        String path = resourceLocation.toString();
         // hardcode to png, otherwise we would mess with all sorts of files, even when they are no image
         // implementation works for all file extensions otherwise if this check is removed
-        if (!path.endsWith(".png")) return false;
+        if (resourceLocation.getPath().startsWith("textures/") && !resourceLocation.getPath().endsWith(".png")) {
+            return false;
+        }
+
+        String path = resourceLocation.toString();
         for (String domain : domains) {
             if (resourceLocation.getPath().startsWith(domain)) {
                 for (Function<String, Boolean> filter : filters) {
                     Boolean result = filter.apply(path);
-                    if (result != null) return result;
+
+                    if (result != null) {
+                        return result;
+                    }
                 }
+
                 return false;
             }
         }
+
         return false;
     }
 }
