@@ -5,6 +5,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
@@ -62,15 +64,16 @@ public abstract class NewTextureSliderButton extends AbstractSliderButton {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
-        this.setValueFromMouse(mouseX);
+    public void onClick(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
+        this.setValueFromMouse(mouseButtonEvent.x());
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        boolean bl = keyCode == 263;
-        if (bl || keyCode == 262) {
-            float f = bl ? -1.0F : 1.0F;
+    public boolean keyPressed(KeyEvent keyEvent) {
+        boolean isLeft = keyEvent.isLeft();
+        boolean isRight = keyEvent.isRight();
+        if (isLeft || isRight) {
+            float f = isLeft ? -1.0F : 1.0F;
             this.setValue(this.value + (double) (f / (float) (this.width - 18)));
         }
 
@@ -92,8 +95,8 @@ public abstract class NewTextureSliderButton extends AbstractSliderButton {
     }
 
     @Override
-    protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-        this.setValueFromMouse(mouseX);
-        super.onDrag(mouseX, mouseY, dragX, dragY);
+    protected void onDrag(MouseButtonEvent mouseButtonEvent, double dragX, double dragY) {
+        this.setValueFromMouse(mouseButtonEvent.x());
+        super.onDrag(mouseButtonEvent, dragX, dragY);
     }
 }

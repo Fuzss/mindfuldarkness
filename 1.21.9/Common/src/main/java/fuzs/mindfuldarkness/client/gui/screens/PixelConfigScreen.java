@@ -7,11 +7,13 @@ import fuzs.mindfuldarkness.client.handler.ColorChangedAssetsManager;
 import fuzs.mindfuldarkness.client.handler.DaytimeSwitcherHandler;
 import fuzs.mindfuldarkness.client.util.DarkeningAlgorithm;
 import fuzs.mindfuldarkness.config.ClientConfig;
+import fuzs.puzzleslib.api.util.v1.CommonHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -57,8 +59,8 @@ public class PixelConfigScreen extends Screen {
                 (Button button) -> {
                     int length = DarkeningAlgorithm.values().length;
                     DarkeningAlgorithm darkeningAlgorithm = DarkeningAlgorithm.values()[
-                            ((clientConfig.darkeningAlgorithm.get().ordinal() + (hasShiftDown() ? -1 : 1)) % length
-                                    + length) % length];
+                            ((clientConfig.darkeningAlgorithm.get().ordinal() + (CommonHelper.hasShiftDown() ? -1 : 1))
+                                    % length + length) % length];
                     clientConfig.darkeningAlgorithm.set(darkeningAlgorithm);
                     button.setMessage(darkeningAlgorithm.getComponent());
                     if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
@@ -158,10 +160,10 @@ public class PixelConfigScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (super.keyPressed(keyCode, scanCode, modifiers)) {
+    public boolean keyPressed(KeyEvent keyEvent) {
+        if (super.keyPressed(keyEvent)) {
             return true;
-        } else if (this.minecraft.options.keyInventory.matches(keyCode, scanCode)) {
+        } else if (this.minecraft.options.keyInventory.matches(keyEvent)) {
             this.onClose();
             return true;
         } else {

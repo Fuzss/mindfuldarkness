@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -36,7 +37,7 @@ public class DaytimeSwitcherHandler {
         setHorizontalButtonPosition(minecraft.screen);
     }
 
-    public static void onAfterMouseClick(Screen screen, double mouseX, double mouseY, int button) {
+    public static void onAfterMouseClick(Screen screen, MouseButtonEvent mouseButtonEvent) {
         setHorizontalButtonPosition(screen);
     }
 
@@ -92,7 +93,7 @@ public class DaytimeSwitcherHandler {
         return EventResultHolder.pass();
     }
 
-    public static void onDrawBackground(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    public static void onAfterBackground(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         if (supportsDaytimeSwitcher(screen)) {
             drawThemeBackground(guiGraphics, screen.leftPos, screen.topPos, screen.imageWidth);
         }
