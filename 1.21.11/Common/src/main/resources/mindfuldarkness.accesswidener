@@ -2,4 +2,6 @@ accessWidener   v2  named
 accessible  field   net/minecraft/world/inventory/AbstractContainerMenu menuType    Lnet/minecraft/world/inventory/MenuType;
 accessible  field   net/minecraft/client/renderer/texture/TextureManager    byPath  Ljava/util/Map;
 accessible  field   net/minecraft/client/renderer/texture/TextureManager    tickableTextures    Ljava/util/Set;
-accessible  method  net/minecraft/client/renderer/texture/TextureManager    safeClose   (Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/client/renderer/texture/AbstractTexture;)V
+accessible  method  net/minecraft/client/renderer/texture/TextureManager    safeClose   (Lnet/minecraft/resources/Identifier;Lnet/minecraft/client/renderer/texture/AbstractTexture;)V
+extendable  method  net/minecraft/client/gui/components/AbstractSliderButton    setValueFromMouse   (Lnet/minecraft/client/input/MouseButtonEvent;)V
+accessible  field   net/minecraft/client/gui/components/AbstractSliderButton    dragging    Z

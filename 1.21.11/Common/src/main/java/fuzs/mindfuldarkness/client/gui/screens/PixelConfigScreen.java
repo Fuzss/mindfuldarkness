@@ -8,6 +8,7 @@ import fuzs.mindfuldarkness.client.handler.DaytimeSwitcherHandler;
 import fuzs.mindfuldarkness.client.util.DarkeningAlgorithm;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import fuzs.puzzleslib.api.util.v1.CommonHelper;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -17,6 +18,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 
 public class PixelConfigScreen extends Screen {
     public static final Component ALGORITHM_COMPONENT = Component.translatable("screen.daytime_switcher.algorithm");
@@ -119,6 +121,44 @@ public class PixelConfigScreen extends Screen {
         this.renderLabels(guiGraphics, mouseX, mouseY);
     }
 
+    private void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        drawCenteredString(guiGraphics,
+                this.font,
+                ALGORITHM_COMPONENT,
+                this.width / 2,
+                this.topPos + 19,
+                0xFF404040,
+                false);
+        drawCenteredString(guiGraphics,
+                this.font,
+                INTERFACE_DARKNESS_COMPONENT,
+                this.width / 2,
+                this.topPos + 67,
+                0xFF404040,
+                false);
+        drawCenteredString(guiGraphics,
+                this.font,
+                FONT_BRIGHTNESS_COMPONENT,
+                this.width / 2,
+                this.topPos + 115,
+                0xFF404040,
+                false);
+    }
+
+    public static void drawCenteredString(GuiGraphics guiGraphics, Font font, Component text, int x, int y, int color, boolean dropShadow) {
+        FormattedCharSequence formattedCharSequence = text.getVisualOrderText();
+        if (dropShadow) {
+            guiGraphics.drawString(font, formattedCharSequence, (x - font.width(formattedCharSequence) / 2), y, color);
+        } else {
+            guiGraphics.drawString(font,
+                    formattedCharSequence,
+                    (x - font.width(formattedCharSequence) / 2),
+                    y,
+                    color,
+                    false);
+        }
+    }
+
     @Override
     public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.renderTransparentBackground(guiGraphics);
@@ -133,30 +173,6 @@ public class PixelConfigScreen extends Screen {
                 256,
                 256);
         DaytimeSwitcherHandler.drawThemeBackground(guiGraphics, this.leftPos, this.topPos, this.imageWidth);
-    }
-
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        NewTextureButton.drawCenteredString(guiGraphics,
-                this.font,
-                ALGORITHM_COMPONENT,
-                this.width / 2,
-                this.topPos + 19,
-                0xFF404040,
-                false);
-        NewTextureButton.drawCenteredString(guiGraphics,
-                this.font,
-                INTERFACE_DARKNESS_COMPONENT,
-                this.width / 2,
-                this.topPos + 67,
-                0xFF404040,
-                false);
-        NewTextureButton.drawCenteredString(guiGraphics,
-                this.font,
-                FONT_BRIGHTNESS_COMPONENT,
-                this.width / 2,
-                this.topPos + 115,
-                0xFF404040,
-                false);
     }
 
     @Override

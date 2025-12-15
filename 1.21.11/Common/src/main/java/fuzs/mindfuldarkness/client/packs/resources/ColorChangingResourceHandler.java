@@ -7,10 +7,10 @@ import fuzs.mindfuldarkness.client.util.DarkeningAlgorithm;
 import fuzs.mindfuldarkness.client.util.RGBBrightnessUtil;
 import fuzs.mindfuldarkness.config.ClientConfig;
 import fuzs.puzzleslib.api.client.packs.v1.NativeImageHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class ColorChangingResourceHandler {
     /**
      * Path may begin with '!' if it is an exclusion.
      * <p>Path can optionally begin with '<code>namespace</code>:'.
-     * <p>Path can end with either a valid resource location path, or an optional resource location path followed by '/*',
+     * <p>Path can end with either a valid identifier path, or an optional identifier path followed by '/*',
      * or just '*' if directed at root.
      */
     public static final String VALID_MINDFUL_DARKNESS_PATH = "^!?([a-z0-9_.-]+:)?([a-z0-9/_.-]+|(([a-z0-9/_.-]*/|)\\*(\\.\\w+)?))$";
@@ -39,7 +39,7 @@ public class ColorChangingResourceHandler {
         // NO-OP
     }
 
-    public Optional<Resource> getResource(ResourceLocation location, Optional<Resource> resource) {
+    public Optional<Resource> getResource(Identifier location, Optional<Resource> resource) {
         if (resource.isPresent() && this.matchesPath(location)) {
             ColorChangedAssetsManager.INSTANCE.add(location);
             if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
@@ -62,9 +62,9 @@ public class ColorChangingResourceHandler {
         }
     }
 
-    public void processResource(ResourceLocation resourceLocation, NativeImage nativeImage) {
-        if (this.matchesPath(resourceLocation)) {
-            ColorChangedAssetsManager.INSTANCE.add(resourceLocation);
+    public void processResource(Identifier identifier, NativeImage nativeImage) {
+        if (this.matchesPath(identifier)) {
+            ColorChangedAssetsManager.INSTANCE.add(identifier);
             if (MindfulDarkness.CONFIG.get(ClientConfig.class).darkTheme.get()) {
                 double textureDarkness = MindfulDarkness.CONFIG.get(ClientConfig.class).textureDarkness.get();
                 DarkeningAlgorithm algorithm = MindfulDarkness.CONFIG.get(ClientConfig.class).darkeningAlgorithm.get();
@@ -90,7 +90,7 @@ public class ColorChangingResourceHandler {
         this.validPaths = null;
     }
 
-    private boolean matchesPath(ResourceLocation location) {
+    private boolean matchesPath(Identifier location) {
         if (!MindfulDarkness.CONFIG.getHolder(ClientConfig.class).isAvailable()) return false;
         return matchesPath(this.getNormalizedDomains(), this.getValidPaths(), location);
     }
@@ -170,16 +170,16 @@ public class ColorChangingResourceHandler {
         return pathFilters;
     }
 
-    private static boolean matchesPath(List<String> domains, List<Function<String, Boolean>> filters, ResourceLocation resourceLocation) {
+    private static boolean matchesPath(List<String> domains, List<Function<String, Boolean>> filters, Identifier identifier) {
         // hardcode to png, otherwise we would mess with all sorts of files, even when they are no image
         // implementation works for all file extensions otherwise if this check is removed
-        if (resourceLocation.getPath().startsWith("textures/") && !resourceLocation.getPath().endsWith(".png")) {
+        if (identifier.getPath().startsWith("textures/") && !identifier.getPath().endsWith(".png")) {
             return false;
         }
 
-        String path = resourceLocation.toString();
+        String path = identifier.toString();
         for (String domain : domains) {
-            if (resourceLocation.getPath().startsWith(domain)) {
+            if (identifier.getPath().startsWith(domain)) {
                 for (Function<String, Boolean> filter : filters) {
                     Boolean result = filter.apply(path);
 

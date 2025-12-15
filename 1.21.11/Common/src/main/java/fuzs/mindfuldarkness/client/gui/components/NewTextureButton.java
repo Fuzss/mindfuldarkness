@@ -1,26 +1,38 @@
 package fuzs.mindfuldarkness.client.gui.components;
 
+import fuzs.mindfuldarkness.client.gui.screens.PixelConfigScreen;
 import fuzs.mindfuldarkness.client.handler.DaytimeSwitcherHandler;
 import fuzs.puzzleslib.api.client.gui.v2.GuiGraphicsHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.Mth;
 
 public class NewTextureButton extends Button {
 
     public NewTextureButton(int x, int y, int width, int height, Component component, OnPress onPress) {
         super(x, y, width, height, component, onPress, DEFAULT_NARRATION);
+        this.setMessage(component);
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
+    public Component getMessage() {
+        return this.active && this.isHoveredOrFocused() ? this.message : this.inactiveMessage;
+    }
+
+    @Override
+    public void setMessage(Component message) {
+        this.message = ComponentUtils.mergeStyles(message, Style.EMPTY.withColor(ChatFormatting.YELLOW));
+        this.inactiveMessage = ComponentUtils.mergeStyles(message, Style.EMPTY.withColor(0x404040));
+    }
+
+    @Override
+    public void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
         Minecraft minecraft = Minecraft.getInstance();
         GuiGraphicsHelper.blitNineSliced(guiGraphics,
                 RenderPipelines.GUI_TEXTURED,
@@ -38,32 +50,16 @@ public class NewTextureButton extends Button {
                 0,
                 this.getTextureY(),
                 ARGB.white(this.alpha));
-        int fontColor = this.active && this.isHoveredOrFocused() ? ChatFormatting.YELLOW.getColor() : 0x404040;
-        drawCenteredString(guiGraphics,
+        PixelConfigScreen.drawCenteredString(guiGraphics,
                 minecraft.font,
                 this.getMessage(),
                 this.getX() + this.width / 2,
                 this.getY() + (this.height - 8) / 2,
-                fontColor | Mth.ceil(this.alpha * 255.0F) << 24,
+                ARGB.white(this.alpha),
                 false);
     }
 
     private int getTextureY() {
-        int offset = !this.active || this.isHoveredOrFocused() ? 2 : 1;
-        return 166 + offset * 20;
-    }
-
-    public static void drawCenteredString(GuiGraphics guiGraphics, Font font, Component text, int x, int y, int color, boolean dropShadow) {
-        FormattedCharSequence formattedCharSequence = text.getVisualOrderText();
-        if (dropShadow) {
-            guiGraphics.drawString(font, formattedCharSequence, (x - font.width(formattedCharSequence) / 2), y, color);
-        } else {
-            guiGraphics.drawString(font,
-                    formattedCharSequence,
-                    (x - font.width(formattedCharSequence) / 2),
-                    y,
-                    color,
-                    false);
-        }
+        return 166 + (!this.active || this.isHoveredOrFocused() ? 2 : 1) * 20;
     }
 }

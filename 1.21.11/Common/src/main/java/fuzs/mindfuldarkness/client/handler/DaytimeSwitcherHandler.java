@@ -17,17 +17,17 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 public class DaytimeSwitcherHandler {
-    public static final ResourceLocation TEXTURE_LOCATION = MindfulDarkness.id("textures/gui/daytime_switcher.png");
+    public static final Identifier TEXTURE_LOCATION = MindfulDarkness.id("textures/gui/daytime_switcher.png");
     public static final String KEY_DEBUG_IDENTIFIER = "screen.debug.identifier";
     public static final String KEY_DEBUG_MENU_TYPE = "screen.debug.menuType";
 
@@ -61,7 +61,7 @@ public class DaytimeSwitcherHandler {
             Minecraft minecraft = Minecraft.getInstance();
 
             if (MindfulDarkness.CONFIG.get(ClientConfig.class).debugAllScreens) {
-                String identifier = FontColorHandler.getScreenIdentifier(newScreen);
+                String identifier = FontColorHandler.getScreenId(newScreen);
 
                 if (identifier != null) {
                     Component message = Component.translatable(KEY_DEBUG_IDENTIFIER,
